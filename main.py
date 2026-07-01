@@ -86,10 +86,6 @@ class ColourCoperUI:
         self.tab_button = widgets.ButtonNewTab(self.tab_frame, command = self.new_project_tab)
         self.tab_button.pack(side = "left", padx = (0, 10))
 
-        # Default starting tab, with a demo swatch so the layout isn't empty.
-        default_tab_id = self._create_tab("untitled project")
-        self._add_swatch_to_tab(default_tab_id, "TEST", "#FF8D28", mark_dirty = False)
-
 
         '''
         FOOTER SECTION
