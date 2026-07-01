@@ -23,7 +23,7 @@ DATA_FILE = "swatches.json"
 class ColourCoperUI:
     def __init__(self, root):
         self.root = root
-        self.root.title("Colour Clipboard")
+        self.root.title("Swatch")
         self.root.geometry("960x540")
         self.root.minsize(854,480)
         self.root.config(background = cl.CC_WHITE)
@@ -65,7 +65,7 @@ class ColourCoperUI:
         self.header_frame.columnconfigure(1, weight=1)
 
         # Project name label aligned to the left of the window.
-        self.project_heading = widgets.LabelHeading(self.header_frame, text = "Colour Clipboard")
+        self.project_heading = widgets.LabelHeading(self.header_frame, text = "Swatch")
         self.project_heading.grid(row = 0, column = 0, sticky = "w", pady = 20)
 
         # Save swatch palette button aligned to the right of the window.
