@@ -38,7 +38,7 @@ class ColourCoperUI:
         self.tab_frame.pack(side = "top", fill = "x", padx = WINDOW_PADDING, pady = (0, 20))
 
         # Swatches section with all of the swatch cards.
-        self.swatches_frame = tk.Frame(root, height = 100, bg = cl.CC_GREY)
+        self.swatches_frame = tk.Frame(root, height = 100, bg = cl.CC_WHITE)
         self.swatches_frame.pack(side = "top", fill = "both", expand = True, padx = WINDOW_PADDING)
 
         # Footer section
@@ -59,11 +59,11 @@ class ColourCoperUI:
         self.project_heading.grid(row = 0, column = 0, sticky = "w", pady = 20)
 
         # Save swatch palette button aligned to the right of the window.
-        self.save_button = tk.Button(self.header_frame, bg = cl.CC_WHITE, text = "save")
+        self.save_button = tk.Button(self.header_frame, highlightbackground = cl.CC_WHITE, text = "save")
         self.save_button.grid(row = 0, column = 2)
 
         # Load swatches palette button aligned to the right of the window.
-        self.load_button = tk.Button(self.header_frame, bg = cl.CC_WHITE, text = "load")
+        self.load_button = tk.Button(self.header_frame, highlightbackground = cl.CC_WHITE, text = "load")
         self.load_button.grid(row = 0, column = 3)
 
         '''
@@ -98,9 +98,9 @@ class ColourCoperUI:
         footer_text.pack(padx=20, pady=20, anchor="center")
 
 
-        '''
-        UI FUNCTIONS
-        '''
+    '''
+    UI FUNCTIONS
+    '''
 
     # Create a new swatch
     def open_swatch_popup(self):
@@ -145,6 +145,7 @@ class ColourCoperUI:
                 
             print(f"Saving Swatch -> Name: {name_data}, Hex: {hex_data}")
             
+            # Create a new swatch widget from the user's input values.
             new_swatch = widgets.Swatch(self.swatches_frame, label_text=name_data, hex_code = hex_data)
             new_swatch.grid(column = 0, row = 0, padx = 5, pady = 5)
             

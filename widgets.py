@@ -10,6 +10,7 @@ class ButtonTab(tk.Button):
         defaults = {
             'fg': cl.CC_BLACK,
             'bg': cl.CC_WHITE,
+            "highlightbackground": cl.CC_WHITE,
             'font': ('arial', 14, 'normal'),
             'borderwidth': 0,
             'cursor': 'hand2',  # Hand cursor on hover
@@ -36,6 +37,7 @@ class ButtonNewTab(tk.Button):
         defaults = {
             'fg': cl.CC_BLACK,
             'bg': cl.CC_WHITE,
+            "highlightbackground": cl.CC_WHITE,
             'font': ('arial', 14, 'normal'),
             'borderwidth': 0,
             'cursor': 'hand2',  # Hand cursor on hover
@@ -172,7 +174,7 @@ class Swatch(tk.Frame):
         lbl_title.grid(row=0, column=0, sticky="ew", padx=10, pady=(10))
 
         # Delete button
-        delete_button = tk.Button(self, text = "x", font = ("Arial", 16), **lbl_opts, command=self.close_swatch)
+        delete_button = tk.Button(self, text = "x", font = ("Arial", 16), highlightbackground = self.hex_code, **lbl_opts, command=self.close_swatch)
         delete_button.grid(row = 0, column = 1, sticky = "e", padx = 10, pady = 10)
         
         # Hex Code Label
