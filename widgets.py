@@ -42,9 +42,9 @@ class ButtonTab(tk.Button):
         ''' Style this tab as selected/unselected. '''
         self.is_active = active
         if active:
-            self.config(bg = cl.CC_BLACK, fg = cl.CC_WHITE)
+            self.config(bg = cl.CC_BLACK, fg = cl.CC_BLACK)
         else:
-            self.config(bg = cl.CC_WHITE, fg = cl.CC_BLACK)
+            self.config(bg = cl.CC_WHITE, fg = cl.CC_GREY)
 
 class ButtonNewTab(tk.Button):
     def __init__(self, parent, **kwargs):
