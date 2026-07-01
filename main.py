@@ -12,6 +12,7 @@ CONSTANTS
 '''
 WINDOW_PADDING = 40
 DATA_FILE = "swatches.json"
+        
 
 class ColourCoperUI:
     def __init__(self, root):
@@ -30,7 +31,7 @@ class ColourCoperUI:
         self.header_frame.pack(side = "top", fill = "x", padx = WINDOW_PADDING)
 
         # Tab section with buttons for each colour swatch group.
-        self.tab_frame = tk.Frame(root, height = 50, bg = cl.CC_BLACK)
+        self.tab_frame = tk.Frame(root, height = 50, bg = cl.CC_WHITE)
         self.tab_frame.pack(side = "top", fill = "x", padx = WINDOW_PADDING, pady = (0, 20))
 
         # Swatches section with all of the swatch cards.
@@ -67,6 +68,10 @@ class ColourCoperUI:
 
         |[project tab] [project tab] [+]        |
         '''
+        # default tab that will be renamed when saved
+        self.default_tab_button = widgets.ButtonTab(self.tab_frame, text = "untitied project")
+        self.default_tab_button.pack(side = "left", padx = (0, 10))
+
         # New tab button
         self.tab_button = widgets.ButtonNewTab(self.tab_frame)
         self.tab_button.pack(side = "left", padx = (0, 10))
@@ -75,6 +80,12 @@ class ColourCoperUI:
         '''
         SWATCH SECTION
         '''
+        text_swatch = widgets.Swatch(self.swatches_frame, label_text = "TEST", hex_code = "#FF8D28")
+        text_swatch.grid(row = 0, column = 0, padx = 5, pady = 5)
+
+        # New swatch button
+        self.new_swatch_button = widgets.ButtonNewSwatch(self.swatches_frame)
+        self.new_swatch_button.grid(row = 0, column = 1)
 
 
         '''
