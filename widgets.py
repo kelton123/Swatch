@@ -188,27 +188,36 @@ class Swatch(tk.Frame):
         lbl_opts = {"bg": self.hex_code, "fg": text_color, "anchor": "w"}
         
         # Main Custom Label
-        lbl_title = tk.Label(self, text=self.label_text, font=("Arial", 18, "bold"), **lbl_opts)
-        lbl_title.grid(row=0, column=0, sticky="ew", padx=10, pady=(10))
+        lbl_title = tk.Label(self, text=self.label_text, font=("Arial", 20, "bold"), **lbl_opts)
+        lbl_title.grid(row=0, column=0, sticky="w", padx=(10, 0), pady=(10))
 
         # Delete button
         delete_button = tk.Button(self, text = "x", font = ("Arial", 16), highlightbackground = self.hex_code, fg = text_color, command=self.close_swatch)
-        delete_button.grid(row = 0, column = 1, sticky = "e", padx = 10, pady = 10)
+        delete_button.grid(row = 0, column = 1, sticky = "e", padx = (0, 10), pady = 10)
         
         # Hex Code Label
-        lbl_hex = tk.Label(self, text=f"HEX: {self.hex_code}", font=("Arial", 12), **lbl_opts)
+        lbl_hex = tk.Label(self, text="HEX: ", font=("Arial", 12), **lbl_opts)
         lbl_hex.grid(row=1, column=0, sticky="ew", padx=10, pady=2)
+
+        hex_value = tk.Label(self, text = f"{self.hex_code}", font=("Arial", 16), **lbl_opts)
+        hex_value.grid(row = 1, column = 1, sticky = "e", padx = 10, pady = 2)
         
         # RGB Code Label
-        rgb_text = f"RGB: ({r}, {g}, {b})"
-        lbl_rgb = tk.Label(self, text=rgb_text, font=("Arial", 12), **lbl_opts)
+        rgb_text = f"({r}, {g}, {b})"
+        lbl_rgb = tk.Label(self, text="RGB: ", font=("Arial", 12), **lbl_opts)
         lbl_rgb.grid(row=2, column=0, sticky="ew", padx=10, pady=2)
+
+        rgb_value = tk.Label(self, text = rgb_text, font = ("Arial", 16), **lbl_opts)
+        rgb_value.grid(row = 2, column = 1, sticky = "e", padx = 10, pady=2)
         
         # CMYK Code Label
         c, m, y, k = self.cmyk_code
-        cmyk_text = f"CMYK: ({c}, {m}, {y}, {k})"
-        lbl_cmyk = tk.Label(self, text=cmyk_text, font=("Arial", 12), **lbl_opts)
+        cmyk_text = f"({c}, {m}, {y}, {k})"
+        lbl_cmyk = tk.Label(self, text="CMYK: ", font=("Arial", 12), **lbl_opts)
         lbl_cmyk.grid(row=3, column=0, sticky="ew", padx=10, pady=(2, 10))
+
+        cmyk_value = tk.Label(self, text = cmyk_text, font=("Arial", 16), **lbl_opts)
+        cmyk_value.grid(row=3, column=1, sticky="w", padx=10, pady=2)
 
     def close_swatch(self):
         self.destroy()
