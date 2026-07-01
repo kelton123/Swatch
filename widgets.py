@@ -21,16 +21,30 @@ class ButtonTab(tk.Button):
         defaults.update(kwargs)
         super().__init__(parent, **defaults)
 
+        # Tracks whether this tab is the currently selected one, so hover
+        # events don't overwrite the "active" styling.
+        self.is_active = False
+
         self.bind("<Enter>", self.on_enter)
         self.bind("<Leave>", self.on_leave)
 
     def on_enter(self, event):
         ''' Update the background colour to indicate hovering. '''
-        self.config(bg = cl.CC_GREY)
+        if not self.is_active:
+            self.config(bg = cl.CC_GREY)
         
     def on_leave(self, event):
         ''' Update the background colour to the default. '''
-        self.config(bg = cl.CC_WHITE)
+        if not self.is_active:
+            self.config(bg = cl.CC_WHITE)
+
+    def set_active(self, active):
+        ''' Style this tab as selected/unselected. '''
+        self.is_active = active
+        if active:
+            self.config(bg = cl.CC_BLACK, fg = cl.CC_WHITE)
+        else:
+            self.config(bg = cl.CC_WHITE, fg = cl.CC_BLACK)
 
 class ButtonNewTab(tk.Button):
     def __init__(self, parent, **kwargs):
@@ -114,7 +128,7 @@ class LabelFooter(tk.Label):
 
 
 class Swatch(tk.Frame):
-    def __init__(self, parent, label_text, hex_code, **kwargs):
+    def __init__(self, parent, label_text, hex_code, on_delete=None, **kwargs):
         defaults = {
             "bg": hex_code,
             "height": 20,
@@ -123,6 +137,10 @@ class Swatch(tk.Frame):
 
         defaults.update(kwargs)
         super().__init__(parent, **defaults)
+
+        # Optional callback fired after this swatch has been deleted, so the
+        # owning tab can reflow its layout and mark itself as unsaved.
+        self.on_delete = on_delete
 
         # Create the colour variables.
         self.label_text = label_text
@@ -174,7 +192,7 @@ class Swatch(tk.Frame):
         lbl_title.grid(row=0, column=0, sticky="ew", padx=10, pady=(10))
 
         # Delete button
-        delete_button = tk.Button(self, text = "x", font = ("Arial", 16), highlightbackground = self.hex_code, **lbl_opts, command=self.close_swatch)
+        delete_button = tk.Button(self, text = "x", font = ("Arial", 16), highlightbackground = self.hex_code, fg = text_color, command=self.close_swatch)
         delete_button.grid(row = 0, column = 1, sticky = "e", padx = 10, pady = 10)
         
         # Hex Code Label
@@ -194,3 +212,5 @@ class Swatch(tk.Frame):
 
     def close_swatch(self):
         self.destroy()
+        if self.on_delete:
+            self.on_delete()
