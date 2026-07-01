@@ -4,8 +4,11 @@ The main UI for colour clipboard using tkinter as the graphical layer.
 
 import tkinter as tk
 from tkinter import ttk
+from tkinter import messagebox
+
 import widgets as widgets
 import colours as cl
+
 
 '''
 CONSTANTS
@@ -84,7 +87,7 @@ class ColourCoperUI:
         text_swatch.grid(row = 0, column = 0, padx = 5, pady = 5)
 
         # New swatch button
-        self.new_swatch_button = widgets.ButtonNewSwatch(self.swatches_frame)
+        self.new_swatch_button = widgets.ButtonNewSwatch(self.swatches_frame, command = self.open_swatch_popup)
         self.new_swatch_button.grid(row = 0, column = 1)
 
 
@@ -98,6 +101,67 @@ class ColourCoperUI:
         '''
         UI FUNCTIONS
         '''
+
+    # Create a new swatch
+    def open_swatch_popup(self):
+        # 1. Create the top-level pop-up window
+        popup = tk.Toplevel(self.root)
+        popup.title("Add Swatch")
+        popup.geometry("300x180")
+        
+        # Make the popup modal (blocks interaction with main window)
+        popup.transient(self.root)   # Keeps popup on top of main window [2]
+        popup.grab_set()        # Directs all events to this window [1, 3]
+        
+        # Configure layout spacing for the popup
+        popup.columnconfigure(1, weight=1)
+        popup.config(padx=15, pady=15)
+
+        # 2. Name Entry Widget
+        lbl_name = tk.Label(popup, text="Name:")
+        lbl_name.grid(row=0, column=0, sticky="w", pady=5)
+        
+        ent_name = tk.Entry(popup)
+        ent_name.grid(row=0, column=1, sticky="ew", padx=(10, 0), pady=5)
+        ent_name.focus_set()  # Automatically place cursor in this box
+
+        # 3. Hex Entry Widget
+        lbl_hex = tk.Label(popup, text="Hex Code:")
+        lbl_hex.grid(row=1, column=0, sticky="w", pady=5)
+        
+        ent_hex = tk.Entry(popup)
+        ent_hex.grid(row=1, column=1, sticky="ew", padx=(10, 0), pady=5)
+        ent_hex.insert(0, "#")  # Pre-fill with hashtag as a helper
+
+        # 4. Action Functions
+        def save_action():
+            name_data = ent_name.get().strip()
+            hex_data = ent_hex.get().strip()
+            
+            # Simple validation check
+            if not name_data or not hex_data:
+                messagebox.showwarning("Warning", "Both fields are required!", parent=popup)
+                return
+                
+            print(f"Saving Swatch -> Name: {name_data}, Hex: {hex_data}")
+            
+            new_swatch = widgets.Swatch(self.swatches_frame, label_text=name_data, hex_code = hex_data)
+            new_swatch.grid(column = 0, row = 0, padx = 5, pady = 5)
+            
+            popup.destroy()  # Close the popup window after saving [3]
+
+        # 5. Buttons Layout Frame (at the bottom)
+        btn_frame = tk.Frame(popup)
+        btn_frame.grid(row=2, column=0, columnspan=2, sticky="ew", pady=(20, 0))
+        btn_frame.columnconfigure(0, weight=1) # Invisible space pushing buttons right
+
+        # Close Button
+        btn_close = tk.Button(btn_frame, text="Close", command=popup.destroy)  # [3]
+        btn_close.grid(row=0, column=1, padx=5)
+
+        # Save Button
+        btn_save = tk.Button(btn_frame, text="Save", command=save_action)
+        btn_save.grid(row=0, column=2, padx=5)
         
 
 '''

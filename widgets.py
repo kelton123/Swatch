@@ -114,14 +114,13 @@ class LabelFooter(tk.Label):
 class Swatch(tk.Frame):
     def __init__(self, parent, label_text, hex_code, **kwargs):
         defaults = {
-            "bg": "#FF8D28",
+            "bg": hex_code,
             "height": 20,
-            "width": 20,
-            "text": label_text,
+            "width": 20
         }
 
         defaults.update(kwargs)
-        super().__init__(parent, **kwargs)
+        super().__init__(parent, **defaults)
 
         # Create the colour variables.
         self.label_text = label_text
@@ -168,21 +167,28 @@ class Swatch(tk.Frame):
         # UI Styling configurations
         lbl_opts = {"bg": self.hex_code, "fg": text_color, "anchor": "w"}
         
-        # 1. Main Custom Label
-        lbl_title = tk.Label(self, text=self.label_text, font=("Arial", 12, "bold"), **lbl_opts)
-        lbl_title.grid(row=0, column=0, sticky="ew", padx=10, pady=(10, 2))
+        # Main Custom Label
+        lbl_title = tk.Label(self, text=self.label_text, font=("Arial", 18, "bold"), **lbl_opts)
+        lbl_title.grid(row=0, column=0, sticky="ew", padx=10, pady=(10))
+
+        # Delete button
+        delete_button = tk.Button(self, text = "x", font = ("Arial", 16), **lbl_opts, command=self.close_swatch)
+        delete_button.grid(row = 0, column = 1, sticky = "e", padx = 10, pady = 10)
         
-        # 2. Hex Code Label
-        lbl_hex = tk.Label(self, text=f"HEX: {self.hex_code}", font=("Arial", 10), **lbl_opts)
+        # Hex Code Label
+        lbl_hex = tk.Label(self, text=f"HEX: {self.hex_code}", font=("Arial", 12), **lbl_opts)
         lbl_hex.grid(row=1, column=0, sticky="ew", padx=10, pady=2)
         
-        # 3. RGB Code Label
+        # RGB Code Label
         rgb_text = f"RGB: ({r}, {g}, {b})"
-        lbl_rgb = tk.Label(self, text=rgb_text, font=("Arial", 10), **lbl_opts)
+        lbl_rgb = tk.Label(self, text=rgb_text, font=("Arial", 12), **lbl_opts)
         lbl_rgb.grid(row=2, column=0, sticky="ew", padx=10, pady=2)
         
-        # 4. CMYK Code Label
+        # CMYK Code Label
         c, m, y, k = self.cmyk_code
-        cmyk_text = f"CMYK: ({c}%, {m}%, {y}%, {k}%)"
-        lbl_cmyk = tk.Label(self, text=cmyk_text, font=("Arial", 10), **lbl_opts)
+        cmyk_text = f"CMYK: ({c}, {m}, {y}, {k})"
+        lbl_cmyk = tk.Label(self, text=cmyk_text, font=("Arial", 12), **lbl_opts)
         lbl_cmyk.grid(row=3, column=0, sticky="ew", padx=10, pady=(2, 10))
+
+    def close_swatch(self):
+        self.destroy()
