@@ -29,6 +29,8 @@ class ColourCoperUI:
         self.root.config(background = cl.CC_WHITE)
         self.root.resizable(False, False)
 
+        self.centre_launch()
+
         # Tracks every open project tab: tab_id -> {name, button, frame,
         # add_button, filepath, dirty}. Each tab is its own "document",
         # saved/loaded independently (like tabs in Illustrator).
@@ -97,6 +99,22 @@ class ColourCoperUI:
     '''
     UI FUNCTIONS
     '''
+    # Launch the window in the centre of the screen.
+    def centre_launch(self):
+        window_width  = 960
+        window_height = 540
+
+        # get the screen dimension
+        screen_width = self.root.winfo_screenwidth()
+        screen_height = self.root.winfo_screenheight()
+
+        # find the center point
+        center_x = int(screen_width/2 - window_width / 2)
+        center_y = int(screen_height/2 - window_height / 2)
+
+        # set the position of the window to the center of the screen
+        self.root.geometry(f'{window_width}x{window_height}+{center_x}+{center_y}')
+
 
     # Create a new swatch inside the given tab
     def open_swatch_popup(self, tab_id):
