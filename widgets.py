@@ -201,6 +201,10 @@ class Swatch(tk.Frame):
 
         hex_value = tk.Label(self, text = f"{self.hex_code}", font=("Arial", 14), **lbl_opts)
         hex_value.grid(row = 1, column = 1, sticky = "ne", padx = (0, 10), pady = 2)
+
+        sanitezed_hex_code = self.hex_code[1:]
+        hex_value.config(cursor="hand2")
+        hex_value.bind("<Button-1>", lambda e: copy_to_clipboard(hex_value, sanitezed_hex_code))
         
         # RGB Code Label
         rgb_text = f"({r}, {g}, {b})"
@@ -209,6 +213,10 @@ class Swatch(tk.Frame):
 
         rgb_value = tk.Label(self, text = rgb_text, font = ("Arial", 14), **lbl_opts)
         rgb_value.grid(row = 2, column = 1, sticky = "e", padx = (0,10), pady=2)
+
+        sanitized_rgb_code = rgb_text.replace("(", "").replace(")", "")
+        rgb_value.configure(cursor="hand2")
+        rgb_value.bind("<Button-1>", lambda e: copy_to_clipboard(rgb_value, sanitized_rgb_code))
         
         # CMYK Code Label
         c, m, y, k = self.cmyk_code
@@ -218,6 +226,27 @@ class Swatch(tk.Frame):
 
         cmyk_value = tk.Label(self, text = cmyk_text, font=("Arial", 14), **lbl_opts)
         cmyk_value.grid(row=3, column=1, sticky="e", padx=(0,10), pady=2)
+
+        sanitezed_cmyk_code = cmyk_text.replace("(", "").replace(")", "")
+        cmyk_value.configure(cursor="hand2")
+        cmyk_value.bind("<Button-1>", lambda e: copy_to_clipboard(cmyk_value, sanitezed_cmyk_code))
+    
+        def copy_to_clipboard(widget, value):
+            """
+            Copy `value` to the system clipboard and briefly flash the widget's
+            text to "Copied!" as visual confirmation.
+
+            `widget` should be the Label (or any widget) that was clicked — it's
+            used both to reach the root Tk window and to show the feedback.
+            """
+            root = widget.winfo_toplevel()
+            root.clipboard_clear()
+            root.clipboard_append(value)
+            root.update()  # some platforms need this to keep the clipboard live
+
+            original_text = widget.cget("text")
+            widget.config(text="Copied!")
+            widget.after(700, lambda: widget.config(text=original_text))
 
     def close_swatch(self):
         self.destroy()
