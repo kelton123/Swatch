@@ -192,32 +192,32 @@ class Swatch(tk.Frame):
         lbl_title.grid(row=0, column=0, sticky="w", padx=(10, 0), pady=(10, 15))
 
         # Delete button
-        delete_button = tk.Button(self, text = "✕", font = ("Arial", 14), highlightbackground = self.hex_code, fg = text_color, command=self.close_swatch)
+        delete_button = tk.Button(self, text = "✕", font = ("Arial", 14), highlightbackground = self.hex_code, fg = cl.CC_BLACK, command=self.close_swatch)
         delete_button.grid(row = 0, column = 1, sticky = "e", padx = (0, 10), pady = (10, 15))
         
         # Hex Code Label
         lbl_hex = tk.Label(self, text="HEX: ", font=("Arial", 12), **lbl_opts)
-        lbl_hex.grid(row=1, column=0, sticky="ew", padx=10, pady=2)
+        lbl_hex.grid(row=1, column=0, sticky="ew", padx=(10, 0), pady=2)
 
         hex_value = tk.Label(self, text = f"{self.hex_code}", font=("Arial", 14), **lbl_opts)
-        hex_value.grid(row = 1, column = 1, sticky = "ne", padx = 10, pady = 2)
+        hex_value.grid(row = 1, column = 1, sticky = "ne", padx = (0, 10), pady = 2)
         
         # RGB Code Label
         rgb_text = f"({r}, {g}, {b})"
         lbl_rgb = tk.Label(self, text="RGB: ", font=("Arial", 12), **lbl_opts)
-        lbl_rgb.grid(row=2, column=0, sticky="ew", padx=10, pady=2)
+        lbl_rgb.grid(row=2, column=0, sticky="ew", padx=(10, 0), pady=2)
 
         rgb_value = tk.Label(self, text = rgb_text, font = ("Arial", 14), **lbl_opts)
-        rgb_value.grid(row = 2, column = 1, sticky = "e", padx = 10, pady=2)
+        rgb_value.grid(row = 2, column = 1, sticky = "e", padx = (0,10), pady=2)
         
         # CMYK Code Label
         c, m, y, k = self.cmyk_code
         cmyk_text = f"({c}, {m}, {y}, {k})"
         lbl_cmyk = tk.Label(self, text="CMYK: ", font=("Arial", 12), **lbl_opts)
-        lbl_cmyk.grid(row=3, column=0, sticky="ew", padx=10, pady=(2, 10))
+        lbl_cmyk.grid(row=3, column=0, sticky="ew", padx=(10,0), pady=(2, 10))
 
         cmyk_value = tk.Label(self, text = cmyk_text, font=("Arial", 14), **lbl_opts)
-        cmyk_value.grid(row=3, column=1, sticky="e", padx=10, pady=2)
+        cmyk_value.grid(row=3, column=1, sticky="e", padx=(0,10), pady=2)
 
     def close_swatch(self):
         self.destroy()
