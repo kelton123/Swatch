@@ -78,6 +78,11 @@ class ColourCoperUI:
         self.load_button = tk.Button(self.header_frame, highlightbackground = cl.CC_WHITE, text = "load", command = self.load_project_tab)
         self.load_button.grid(row = 0, column = 3)
 
+        # Delete swatches palette button aligned to the right of the window.
+        self.delete_palette_button = tk.Button(self.header_frame, highlightbackground=cl.CC_WHITE, text="delete", command=self.delete_active_tab)
+        self.delete_palette_button.grid(row=0, column=4)
+
+
         '''
         TAB SECTION
 
@@ -348,6 +353,15 @@ class ColourCoperUI:
 
         tab["dirty"] = False
         self._update_tab_label(self.active_tab_id)
+
+    # Delete the active tab
+    def delete_active_tab(self):
+        if self.active_tab_id is None:
+            return
+        
+        # Get the active tab and its data
+        self._remove_tab(self.active_tab_id)
+        
 
     # Load a previously saved JSON file into a new tab
     def load_project_tab(self):
