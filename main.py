@@ -29,14 +29,15 @@ class ColourCoperUI:
         self.root.config(background = cl.CC_WHITE)
         self.root.resizable(False, False)
 
-        self.centre_launch()
+        self.centre_launch(self.root)
 
-        # Tracks every open project tab: tab_id -> {name, button, frame,
-        # add_button, filepath, dirty}. Each tab is its own "document",
-        # saved/loaded independently (like tabs in Illustrator).
+        # Tracks every open project tab, keyed by its content frame (the
+        # widget the Notebook uses as the tab's identifier): frame ->
+        # {name, add_button, filepath, dirty}. Each tab is its own
+        # "document", saved/loaded independently (like tabs in Illustrator).
+        # The Notebook widget itself is the single source of truth for
+        # which tab is active and how tabs are displayed/switched.
         self.tabs = {}
-        self.active_tab_id = None
-        self._tab_counter = 0
 
         '''
         LAYOUT
@@ -45,13 +46,12 @@ class ColourCoperUI:
         self.header_frame = tk.Frame(root, height = 100, bg = cl.CC_WHITE)
         self.header_frame.pack(side = "top", fill = "x", padx = WINDOW_PADDING)
 
-        # Tab section with buttons for each colour swatch group.
-        self.tab_frame = tk.Frame(root, height = 50, bg = cl.CC_WHITE)
-        self.tab_frame.pack(side = "top", fill = "x", padx = WINDOW_PADDING, pady = (0, 20))
-
-        # Swatches section with all of the swatch cards.
-        self.swatches_frame = tk.Frame(root, height = 100, bg = cl.CC_WHITE)
-        self.swatches_frame.pack(side = "top", fill = "both", expand = True, padx = WINDOW_PADDING)
+        # Tab + swatches section: the Notebook shows the tab strip and the
+        # active tab's swatch cards together, so this frame needs to expand
+        # to fill the remaining vertical space (previously split between a
+        # separate tab_frame and swatches_frame).
+        self.tab_frame = tk.Frame(root, bg = cl.CC_WHITE)
+        self.tab_frame.pack(side = "top", fill = "both", expand = True, padx = WINDOW_PADDING, pady = (0, 20))
 
 
         # Footer section
@@ -65,27 +65,45 @@ class ColourCoperUI:
         |[project name]                 [save][load]|
         '''
         # Configure column 1 to expand and create white space.
-        self.header_frame.columnconfigure(1, weight=1)
+        self.header_frame.columnconfigure(1, weight=2)
+        self.header_frame.columnconfigure(5, weight=2)
 
         # Project name label aligned to the left of the window.
         self.project_heading = widgets.LabelHeading(self.header_frame, text = "Swatch")
         self.project_heading.grid(row = 0, column = 0, sticky = "w", pady = 20)
 
+        # SWATCH TOOLS
+        # Add a new tab for swatches.
+        self.add_notebook = tk.Button(self.header_frame, text="add", highlightbackground = cl.CC_WHITE, command=self.add_new_swatch)
+        self.add_notebook.grid(row=0, column=2)
+
+        # Tint adjustment
+        self.tint_entry = tk.Entry(self.header_frame, text="100%", width=10)
+        self.tint_entry.grid(row=0, column=3)
+
+        # Colour code format dropdown
+        # Dropdown options  
+        self.colour_codes = ["hex", "rgb", "cmyk", "hsl", "css"]
+
+        self.format_combobox = ttk.Combobox(self.header_frame, values=self.colour_codes, width=10)
+        self.format_combobox.set("hex")
+        self.format_combobox.grid(row=0, column=4)
+
+        # Add a new tab for swatches.
+        self.add_notebook = tk.Button(self.header_frame, text="new", highlightbackground = cl.CC_WHITE, command=self.new_project_tab)
+        self.add_notebook.grid(row=0, column=6)
+
         # Save swatch palette button aligned to the right of the window.
         self.save_button = tk.Button(self.header_frame, highlightbackground = cl.CC_WHITE, text = "save", command = self.save_active_tab)
-        self.save_button.grid(row = 0, column = 2)
+        self.save_button.grid(row = 0, column = 7)
 
         # Load swatches palette button aligned to the right of the window.
         self.load_button = tk.Button(self.header_frame, highlightbackground = cl.CC_WHITE, text = "load", command = self.load_project_tab)
-        self.load_button.grid(row = 0, column = 3)
+        self.load_button.grid(row = 0, column = 8)
 
         # Delete swatches palette button aligned to the right of the window.
         self.delete_palette_button = tk.Button(self.header_frame, highlightbackground=cl.CC_WHITE, text="delete", command=self.delete_active_tab)
-        self.delete_palette_button.grid(row=0, column=4)
-
-        # Add a new tab for swatches.
-        self.add_notebook = tk.Button(self.header_frame, text="Add", highlightbackground = cl.CC_WHITE, command=self.add_tab)
-        self.add_notebook.grid(row=0, column=5)
+        self.delete_palette_button.grid(row=0, column=9)
 
         '''
         TAB SECTION
@@ -93,7 +111,8 @@ class ColourCoperUI:
         |[project tab] [project tab] [+]        |
         '''
 
-        # The Notebook control handles its tabs automatically
+        # The Notebook control handles tab buttons, switching, and active
+        # styling automatically - we just add/remove/rename its child frames.
         self.notebook = ttk.Notebook(self.tab_frame)
         self.notebook.pack(side = "left", fill = "both", expand = True, pady = 10)
 
@@ -108,34 +127,43 @@ class ColourCoperUI:
     '''
     UI FUNCTIONS
     '''
-    def add_tab(self):
-
-        self.frame3 = ttk.Frame(self.notebook, width=400, height=280)
-        self.notebook.add(self.frame3, text="new tab")
-
     # Launch the window in the centre of the screen.
-    def centre_launch(self):
+    def centre_launch(self, window, window_width=960, window_height=540):
+ 
+        center_x, center_y = self.get_screen_centre()
+
+        # set the position of the window to the center of the screen
+        window.geometry(f'{window_width}x{window_height}+{center_x}+{center_y}')
+
+    # Get the centre coordinates of the user's screen
+    def get_screen_centre(self):
+        # get the screen dimension
+        screen_width  = self.root.winfo_screenwidth()
+        screen_height = self.root.winfo_screenheight()
+
         window_width  = 960
         window_height = 540
-
-        # get the screen dimension
-        screen_width = self.root.winfo_screenwidth()
-        screen_height = self.root.winfo_screenheight()
 
         # find the center point
         center_x = int(screen_width/2 - window_width / 2)
         center_y = int(screen_height/2 - window_height / 2)
 
-        # set the position of the window to the center of the screen
-        self.root.geometry(f'{window_width}x{window_height}+{center_x}+{center_y}')
+        return center_x, center_y
 
+
+    # Add a new swatch in the active tab
+    def add_new_swatch(self):
+        active_tab_id = self._get_active_tab_id()
+        self.open_swatch_popup(active_tab_id)
 
     # Create a new swatch inside the given tab
     def open_swatch_popup(self, tab_id):
         # 1. Create the top-level pop-up window
         popup = tk.Toplevel(self.root)
         popup.title("Add Swatch")
-        popup.geometry("300x180")
+        popup.geometry("260x150")
+
+        self.centre_launch(popup, 260, 150)
         
         # Make the popup modal (blocks interaction with main window)
         popup.transient(self.root)   # Keeps popup on top of main window [2]
@@ -203,6 +231,8 @@ class ColourCoperUI:
         popup.columnconfigure(1, weight=1)
         popup.config(padx=15, pady=15)
 
+        self.centre_launch(popup, 300, 140)
+
         lbl_name = tk.Label(popup, text="Project Name:")
         lbl_name.grid(row=0, column=0, sticky="w", pady=5)
 
@@ -234,55 +264,39 @@ class ColourCoperUI:
     TAB MANAGEMENT
     '''
 
-    # Create a new tab (button + empty swatch palette) and switch to it
+    # Create a new tab (content frame + "+" swatch button) and switch to it.
+    # The frame itself is used as the tab's identifier throughout, since
+    # that's what ttk.Notebook expects.
     def _create_tab(self, name):
-        self._tab_counter += 1
-        tab_id = self._tab_counter
+        tab_frame = tk.Frame(self.notebook, bg=cl.CC_WHITE)
+        self.notebook.add(tab_frame, text=name)
 
-        # Tab button, inserted just left of the "+" new-tab button.
-        tab_button = widgets.ButtonTab(self.tab_frame, text=name)
-        tab_button.config(command=lambda: self.switch_tab(tab_id))
-        tab_button.pack(side="left", padx=(0, 10), before=self.tab_button)
-
-        # Content frame that holds this tab's swatches. Only the active
-        # tab's frame is packed/visible at any time.
-        tab_content = tk.Frame(self.swatches_frame, bg=cl.CC_WHITE)
-
-        add_button = widgets.ButtonNewSwatch(tab_content, command=lambda: self.open_swatch_popup(tab_id))
+        add_button = widgets.ButtonNewSwatch(tab_frame, command=lambda: self.open_swatch_popup(tab_frame))
         add_button.grid(row=0, column=0, padx=5, pady=5)
 
-        self.tabs[tab_id] = {
+        self.tabs[tab_frame] = {
             "name": name,
-            "button": tab_button,
-            "frame": tab_content,
             "add_button": add_button,
             "filepath": None,
             "dirty": False,
         }
 
-        self.switch_tab(tab_id)
-        return tab_id
+        self.notebook.select(tab_frame)
+        return tab_frame
 
-    # Remove a tab entirely (used when loading replaces an empty first tab)
+    # Remove a tab entirely (used when loading replaces an empty first tab,
+    # and by the "delete" button)
     def _remove_tab(self, tab_id):
-        tab = self.tabs.pop(tab_id)
-        tab["button"].destroy()
-        tab["frame"].destroy()
-        if self.active_tab_id == tab_id:
-            self.active_tab_id = None
+        self.tabs.pop(tab_id, None)
+        self.notebook.forget(tab_id)
+        tab_id.destroy()
 
-    # Show the given tab's swatches and hide all others
-    def switch_tab(self, tab_id):
-        if tab_id == self.active_tab_id:
-            return
-        if self.active_tab_id in self.tabs:
-            self.tabs[self.active_tab_id]["frame"].pack_forget()
-
-        self.active_tab_id = tab_id
-        self.tabs[tab_id]["frame"].pack(fill="both", expand=True)
-
-        for tid, tab in self.tabs.items():
-            tab["button"].set_active(tid == tab_id)
+    # The frame currently shown by the Notebook, or None if there are no tabs
+    def _get_active_tab_id(self):
+        selection = self.notebook.select()
+        if not selection:
+            return None
+        return self.root.nametowidget(selection)
 
     # Mark a tab as having unsaved changes and update its label with a "*"
     def _mark_dirty(self, tab_id):
@@ -292,7 +306,7 @@ class ColourCoperUI:
     def _update_tab_label(self, tab_id):
         tab = self.tabs[tab_id]
         label = tab["name"] + ("*" if tab["dirty"] else "")
-        tab["button"].config(text=label)
+        self.notebook.tab(tab_id, text=label)
 
     '''
     SWATCH MANAGEMENT
@@ -300,9 +314,8 @@ class ColourCoperUI:
 
     # Add a swatch into a tab and lay it out next to the tab's "+" button
     def _add_swatch_to_tab(self, tab_id, label_text, hex_code, mark_dirty=True):
-        tab = self.tabs[tab_id]
         widgets.Swatch(
-            tab["frame"],
+            tab_id,
             label_text=label_text,
             hex_code=hex_code,
             on_delete=lambda: self._on_swatch_removed(tab_id),
@@ -314,7 +327,7 @@ class ColourCoperUI:
     # Re-lay-out swatches sequentially, keeping the "+" button at the end
     def _regrid_tab(self, tab_id):
         tab = self.tabs[tab_id]
-        swatches = [w for w in tab["frame"].winfo_children() if isinstance(w, widgets.Swatch)]
+        swatches = [w for w in tab_id.winfo_children() if isinstance(w, widgets.Swatch)]
         for i, swatch in enumerate(swatches):
             swatch.grid(row=0, column=i, padx=5, pady=5)
         tab["add_button"].grid(row=0, column=len(swatches), padx=5, pady=5)
@@ -325,8 +338,7 @@ class ColourCoperUI:
 
     # Collect a tab's swatches as plain dicts, ready for JSON export
     def _get_tab_swatches_data(self, tab_id):
-        frame = self.tabs[tab_id]["frame"]
-        swatches = [w for w in frame.winfo_children() if isinstance(w, widgets.Swatch)]
+        swatches = [w for w in tab_id.winfo_children() if isinstance(w, widgets.Swatch)]
         return [{"label": sw.label_text, "hex": sw.hex_code} for sw in swatches]
 
     '''
@@ -335,11 +347,12 @@ class ColourCoperUI:
 
     # Save only the active tab's swatches to a JSON file
     def save_active_tab(self):
-        if self.active_tab_id is None:
+        tab_id = self._get_active_tab_id()
+        if tab_id is None:
             return
 
-        tab = self.tabs[self.active_tab_id]
-        data = {"name": tab["name"], "swatches": self._get_tab_swatches_data(self.active_tab_id)}
+        tab = self.tabs[tab_id]
+        data = {"name": tab["name"], "swatches": self._get_tab_swatches_data(tab_id)}
 
         filepath = tab["filepath"]
         if not filepath:
@@ -361,16 +374,15 @@ class ColourCoperUI:
             return
 
         tab["dirty"] = False
-        self._update_tab_label(self.active_tab_id)
+        self._update_tab_label(tab_id)
 
     # Delete the active tab
     def delete_active_tab(self):
-        if self.active_tab_id is None:
+        tab_id = self._get_active_tab_id()
+        if tab_id is None:
             return
-        
-        # Get the active tab and its data
-        self._remove_tab(self.active_tab_id)
-        
+
+        self._remove_tab(tab_id)
 
     # Load a previously saved JSON file into a new tab
     def load_project_tab(self):
