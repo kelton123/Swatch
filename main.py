@@ -53,6 +53,7 @@ class ColourCoperUI:
         self.swatches_frame = tk.Frame(root, height = 100, bg = cl.CC_WHITE)
         self.swatches_frame.pack(side = "top", fill = "both", expand = True, padx = WINDOW_PADDING)
 
+
         # Footer section
         self.footer_frame = tk.Frame(root, height = 50, bg = cl.CC_WHITE)
         self.footer_frame.pack(side = "bottom", fill = "x", padx = WINDOW_PADDING)
@@ -82,16 +83,19 @@ class ColourCoperUI:
         self.delete_palette_button = tk.Button(self.header_frame, highlightbackground=cl.CC_WHITE, text="delete", command=self.delete_active_tab)
         self.delete_palette_button.grid(row=0, column=4)
 
+        # Add a new tab for swatches.
+        self.add_notebook = tk.Button(self.header_frame, text="Add", highlightbackground = cl.CC_WHITE, command=self.add_tab)
+        self.add_notebook.grid(row=0, column=5)
 
         '''
         TAB SECTION
 
         |[project tab] [project tab] [+]        |
         '''
-        # New tab button (packed first so new tabs can insert themselves
-        # to its left, keeping it as the rightmost "+" button).
-        self.tab_button = widgets.ButtonNewTab(self.tab_frame, command = self.new_project_tab)
-        self.tab_button.pack(side = "left", padx = (0, 10))
+
+        # The Notebook control handles its tabs automatically
+        self.notebook = ttk.Notebook(self.tab_frame)
+        self.notebook.pack(side = "left", fill = "both", expand = True, pady = 10)
 
 
         '''
@@ -104,6 +108,11 @@ class ColourCoperUI:
     '''
     UI FUNCTIONS
     '''
+    def add_tab(self):
+
+        self.frame3 = ttk.Frame(self.notebook, width=400, height=280)
+        self.notebook.add(self.frame3, text="new tab")
+
     # Launch the window in the centre of the screen.
     def centre_launch(self):
         window_width  = 960
