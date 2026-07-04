@@ -89,6 +89,7 @@ class ColourCoperUI:
         self.format_combobox = ttk.Combobox(self.header_frame, values=self.colour_codes, width=5, state="readonly")
         self.format_combobox.set("hex")
         self.format_combobox.grid(row=0, column=4)
+        self.format_combobox.bind("<<ComboboxSelected>>", self.update_all_swatches_label)
 
         # Add a new tab for swatches.
         self.add_notebook = tk.Button(self.header_frame, text="new", highlightbackground = cl.CC_WHITE, command=self.new_project_tab)
@@ -111,7 +112,6 @@ class ColourCoperUI:
 
         |[project tab] [project tab] [+]        |
         '''
-
         # The Notebook control handles tab buttons, switching, and active
         # styling automatically - we just add/remove/rename its child frames.
         self.notebook = ttk.Notebook(self.tab_frame)
@@ -238,8 +238,7 @@ class ColourCoperUI:
         btn_save = tk.Button(btn_frame, text="Save", command=save_action)
         btn_save.grid(row=0, column=2, padx=5)
 
-        #lbl_hex.bind("<Return>", save_action)
-        #ent_name.bind("<Return>", save_action)
+        # Allow the user to press return/enter on the keyboard to add the swatch
         popup.bind("<Return>", _save_action_shortcut)
 
     # Create a new, empty project tab via a name-entry pop-up
@@ -329,6 +328,16 @@ class ColourCoperUI:
     '''
     SWATCH MANAGEMENT
     '''
+
+    # Update swatch label to reflect the format in the menu combobox
+    def update_all_swatches_label(self, event):
+        # get the value of the format combobox
+        format_value = event.widget.get()
+        
+        active_tab_id = self._get_active_tab_id()
+        swatches = [w for w in active_tab_id.winfo_children() if isinstance(w, widgets.Swatch)]
+        for i, swatch in enumerate(swatches):
+            swatch.update_colour_code_label(format_value)
 
     # Add a swatch into a tab and lay it out next to the tab's "+" button
     def _add_swatch_to_tab(self, tab_id, label_text, hex_code, mark_dirty=True):

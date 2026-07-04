@@ -1,4 +1,6 @@
 import tkinter as tk
+from tkinter import PhotoImage
+
 import colours as cl
 
 # BUTTONS
@@ -144,9 +146,12 @@ class Swatch(tk.Frame):
 
         # Create the colour variables.
         self.label_text = label_text
-        self.hex_code = hex_code
-        self.rgb_code = self._hex_to_rgb(hex_code)
-        self.cmyk_code = self._rgb_to_cmyk(*self.rgb_code)
+        self.hex_code   = hex_code
+        self.rgb_code   = self._hex_to_rgb(hex_code)
+        self.cmyk_code  = self._rgb_to_cmyk(*self.rgb_code)
+
+        self.formats = ["hex", "rgb", "cmyk", "hsl", "css"]
+        self.active_format = "hex"
 
         # Create the card UI widgets.
         self._create_widgets()
@@ -187,7 +192,7 @@ class Swatch(tk.Frame):
         # UI Styling configurations
         lbl_opts = {"bg": self.hex_code, "fg": text_color, "anchor": "w"}
         
-        # Main Custom Label
+        # Swatch Name Label
         lbl_title = tk.Label(self, text=self.label_text, font=("Arial", 20, "bold"), **lbl_opts)
         lbl_title.grid(row=0, column=0, sticky="w", padx=(10, 0), pady=(10, 15))
 
@@ -195,43 +200,23 @@ class Swatch(tk.Frame):
         delete_button = tk.Button(self, text = "✕", font = ("Arial", 14), highlightbackground = self.hex_code, fg = cl.CC_BLACK, command=self.close_swatch)
         delete_button.grid(row = 0, column = 1, sticky = "e", padx = (0, 10), pady = (10, 15))
         
-        # Hex Code Label
-        lbl_hex = tk.Label(self, text="HEX: ", font=("Arial", 12), **lbl_opts)
-        lbl_hex.grid(row=1, column=0, sticky="ew", padx=(10, 0), pady=2)
+        # Colour Code Label
+        self.colour_code_value = tk.Label(self, text = f"{self.hex_code}", font=("Arial", 14), **lbl_opts)
+        self.colour_code_value.grid(row = 1, column = 0, sticky = "w", padx = (10, 0), pady = (2,10)
 
-        hex_value = tk.Label(self, text = f"{self.hex_code}", font=("Arial", 14), **lbl_opts)
-        hex_value.grid(row = 1, column = 1, sticky = "ne", padx = (0, 10), pady = 2)
+        icon_copy_light = PhotoImage(file="Light_copy_icon.png")
+        icon_copy_dark  = PhotoImage(file="Dark_copy_icon.png")
+        icon_copy = icon_copy_light if brightness < 125 else icon_copy_dark
 
-        sanitezed_hex_code = self.hex_code[1:]
-        hex_value.config(cursor="hand2")
-        hex_value.bind("<Button-1>", lambda e: copy_to_clipboard(hex_value, sanitezed_hex_code))
-        
-        # RGB Code Label
-        rgb_text = f"({r}, {g}, {b})"
-        lbl_rgb = tk.Label(self, text="RGB: ", font=("Arial", 12), **lbl_opts)
-        lbl_rgb.grid(row=2, column=0, sticky="ew", padx=(10, 0), pady=2)
+        icon_copy_label = tk.Label(self, image=icon_copy, **lbl_opts)
+        icon_copy_label.image = icon_copy 
+        icon_copy_label.grid(row=1, column=1, sticky="e", padx = (0, 10), pady = (2,10))
 
-        rgb_value = tk.Label(self, text = rgb_text, font = ("Arial", 14), **lbl_opts)
-        rgb_value.grid(row = 2, column = 1, sticky = "e", padx = (0,10), pady=2)
 
-        sanitized_rgb_code = rgb_text.replace("(", "").replace(")", "")
-        rgb_value.configure(cursor="hand2")
-        rgb_value.bind("<Button-1>", lambda e: copy_to_clipboard(rgb_value, sanitized_rgb_code))
-        
-        # CMYK Code Label
-        c, m, y, k = self.cmyk_code
-        cmyk_text = f"({c}, {m}, {y}, {k})"
-        lbl_cmyk = tk.Label(self, text="CMYK: ", font=("Arial", 12), **lbl_opts)
-        lbl_cmyk.grid(row=3, column=0, sticky="ew", padx=(10,0), pady=(2, 10))
-
-        cmyk_value = tk.Label(self, text = cmyk_text, font=("Arial", 14), **lbl_opts)
-        cmyk_value.grid(row=3, column=1, sticky="e", padx=(0,10), pady=2)
-
-        sanitezed_cmyk_code = cmyk_text.replace("(", "").replace(")", "")
-        cmyk_value.configure(cursor="hand2")
-        cmyk_value.bind("<Button-1>", lambda e: copy_to_clipboard(cmyk_value, sanitezed_cmyk_code))
+        self.colour_code_value.config(cursor="hand2")
+        self.colour_code_value.bind("<Button-1>", lambda e: copy_to_clipboard(self.colour_code_value))
     
-        def copy_to_clipboard(widget, value):
+        def copy_to_clipboard(widget):
             """
             Copy `value` to the system clipboard and briefly flash the widget's
             text to "Copied!" as visual confirmation.
@@ -239,14 +224,41 @@ class Swatch(tk.Frame):
             `widget` should be the Label (or any widget) that was clicked — it's
             used both to reach the root Tk window and to show the feedback.
             """
+            # By default copy the hex code
+            colour_code_to_copy = self.hex_code
+
+            match self.active_format:
+                case "hex":
+                    colour_code_to_copy = self.hex_code
+                case "rgb":
+                    colour_code_to_copy = self.rgb_code
+                case "cmyk":
+                    colour_code_to_copy = self.cmyk_code
+                case _:
+                    colour_code_to_copy = self.hex_code
+
             root = widget.winfo_toplevel()
             root.clipboard_clear()
-            root.clipboard_append(value)
-            root.update()  # some platforms need this to keep the clipboard live
+            root.clipboard_append(colour_code_to_copy)
+            root.update()
 
             original_text = widget.cget("text")
             widget.config(text="Copied!")
             widget.after(700, lambda: widget.config(text=original_text))
+
+    def update_colour_code_label(self, code_type):
+        match code_type:
+            case "hex":
+                self.colour_code_value.config(text=self.hex_code)
+                self.active_format = "hex"
+            case "rgb":
+                self.colour_code_value.config(text=self.rgb_code)
+                self.active_format = "rgb"
+            case "cmyk":
+                self.colour_code_value.config(text=self.cmyk_code)
+                self.active_format = "cmyk"
+            case _:
+                self.colour_code_value.config(text=self.hex_code)
 
     def close_swatch(self):
         self.destroy()
