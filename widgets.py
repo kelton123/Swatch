@@ -149,6 +149,7 @@ class Swatch(tk.Frame):
         self.hex_code   = hex_code
         self.rgb_code   = self._hex_to_rgb(hex_code)
         self.cmyk_code  = self._rgb_to_cmyk(*self.rgb_code)
+        self.hsl_code   = self._hex_to_hsl(hex_code)
 
         self.formats = ["hex", "rgb", "cmyk", "hsl", "css"]
         self.active_format = "hex"
@@ -181,6 +182,52 @@ class Swatch(tk.Frame):
         
         # Convert to clean rounded percentages
         return (round(c * 100), round(m * 100), round(y * 100), round(k * 100))
+    
+    def _hex_to_hsl(self, hex_code):
+        hex_string = self.hex_code[1:]
+        # 1. Clean the hex string and convert to RGB integers (0-255)
+        r, g, b = tuple(int(hex_string[i:i+2], 16) for i in (0, 2, 4))
+        
+        # 2. Scale RGB values to a 0.0 - 1.0 range
+        r /= 255.0
+        g /= 255.0
+        b /= 255.0
+        
+        # 3. Find the minimum and maximum color channel values
+        c_max = max(r, g, b)
+        c_min = min(r, g, b)
+        delta = c_max - c_min
+        
+        # 4. Calculate Lightness (L)
+        l = (c_max + c_min) / 2
+        
+        # 5. Calculate Saturation (S) and Hue (H)
+        if delta == 0:
+            h = 0
+            s = 0
+        else:
+            # Calculate Saturation based on Lightness levels
+            s = delta / (1 - abs(2 * l - 1))
+            
+            # Calculate Hue based on which color channel is dominant
+            if c_max == r:
+                h = ((g - b) / delta) % 6
+            elif c_max == g:
+                h = ((b - r) / delta) + 2
+            else:  # c_max == b
+                h = ((r - g) / delta) + 4
+                
+            h *= 60  # Convert Hue to degrees on a 360° color wheel
+            if h < 0:
+                h += 360
+
+        # 6. Format into clean, rounded integers
+        h_deg = round(h)
+        s_pct = round(s * 100)
+        l_pct = round(l * 100)
+        
+        return h_deg, s_pct, l_pct
+
     
     def _create_widgets(self):
         # Determine text colour based on background brightness for readability
@@ -237,6 +284,8 @@ class Swatch(tk.Frame):
                     colour_code_to_copy = self.rgb_code
                 case "cmyk":
                     colour_code_to_copy = self.cmyk_code
+                case "hsl":
+                    colour_code_to_copy = self.hsl_code
                 case _:
                     colour_code_to_copy = self.hex_code
 
@@ -260,6 +309,9 @@ class Swatch(tk.Frame):
             case "cmyk":
                 self.colour_code_value.config(text=self.cmyk_code)
                 self.active_format = "cmyk"
+            case "hsl":
+                self.colour_code_value.config(text=self.hsl_code)
+                self.active_format = "hsl"
             case _:
                 self.colour_code_value.config(text=self.hex_code)
 

@@ -282,10 +282,10 @@ class ColourCoperUI:
         btn_frame.columnconfigure(0, weight=1)
 
         btn_close = tk.Button(btn_frame, text="Cancel", command=popup.destroy)
-        btn_close.grid(row=0, column=1, padx=5)
+        btn_close.grid(row=0, column=1, padx=5, pady=0)
 
         btn_create = tk.Button(btn_frame, text="Create", command=create_action)
-        btn_create.grid(row=0, column=2, padx=5)
+        btn_create.grid(row=0, column=2, padx=5, pady=0)
 
         # Bind keyboard inputs
         popup.bind("<Escape>", close_popup)
@@ -352,7 +352,7 @@ class ColourCoperUI:
             for i, swatch in enumerate(swatches):
                 swatch.update_colour_code_label(format_value)
 
-    # Add a swatch into a tab and lay it out next to the tab's "+" button
+    # Add a swatch into the active tab
     def _add_swatch_to_tab(self, tab_id, label_text, hex_code, mark_dirty=True):
         widgets.Swatch(
             tab_id,
@@ -360,6 +360,7 @@ class ColourCoperUI:
             hex_code=hex_code,
             on_delete=lambda: self._on_swatch_removed(tab_id),
         )  # raises ValueError for an invalid hex code
+        
         self._regrid_tab(tab_id)
         if mark_dirty:
             self._mark_dirty(tab_id)
