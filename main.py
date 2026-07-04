@@ -225,6 +225,9 @@ class ColourCoperUI:
         def _save_action_shortcut(slef):
             save_action()
 
+        def close_popup(self):
+            popup.destroy()
+
         # 5. Buttons Layout Frame (at the bottom)
         btn_frame = tk.Frame(popup)
         btn_frame.grid(row=2, column=0, columnspan=2, sticky="ew", pady=(20, 0))
@@ -238,8 +241,9 @@ class ColourCoperUI:
         btn_save = tk.Button(btn_frame, text="Save", command=save_action)
         btn_save.grid(row=0, column=2, padx=5)
 
-        # Allow the user to press return/enter on the keyboard to add the swatch
+        # Bind keyboard inputs
         popup.bind("<Return>", _save_action_shortcut)
+        popup.bind("<Escape>", close_popup)
 
     # Create a new, empty project tab via a name-entry pop-up
     def new_project_tab(self):
@@ -268,8 +272,10 @@ class ColourCoperUI:
                 return
             self._create_tab(name)
             popup.destroy()
+        
+        def close_popup(self):
+            popup.destroy()
 
-        ent_name.bind("<Return>", create_action)
 
         btn_frame = tk.Frame(popup)
         btn_frame.grid(row=1, column=0, columnspan=2, sticky="ew", pady=(20, 0))
@@ -280,6 +286,10 @@ class ColourCoperUI:
 
         btn_create = tk.Button(btn_frame, text="Create", command=create_action)
         btn_create.grid(row=0, column=2, padx=5)
+
+        # Bind keyboard inputs
+        popup.bind("<Escape>", close_popup)
+        popup.bind("<Return>", create_action)
 
     '''
     TAB MANAGEMENT
