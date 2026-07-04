@@ -202,7 +202,7 @@ class Swatch(tk.Frame):
         
         # Colour Code Label
         self.colour_code_value = tk.Label(self, text = f"{self.hex_code}", font=("Arial", 14), **lbl_opts)
-        self.colour_code_value.grid(row = 1, column = 0, sticky = "w", padx = (10, 0), pady = (2,10)
+        self.colour_code_value.grid(row = 1, column = 0, sticky = "w", padx = (10, 0), pady = (2,10))
 
         icon_copy_light = PhotoImage(file="Light_copy_icon.png")
         icon_copy_dark  = PhotoImage(file="Dark_copy_icon.png")
