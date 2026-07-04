@@ -78,14 +78,15 @@ class ColourCoperUI:
         self.add_notebook.grid(row=0, column=2)
 
         # Tint adjustment
-        self.tint_entry = tk.Entry(self.header_frame, text="100%", width=10)
+        self.tint_entry = tk.Entry(self.header_frame, width=5)
+        self.tint_entry.insert(0, "100%")  # Pre-fill with hashtag as a helper
         self.tint_entry.grid(row=0, column=3)
 
         # Colour code format dropdown
         # Dropdown options  
         self.colour_codes = ["hex", "rgb", "cmyk", "hsl", "css"]
 
-        self.format_combobox = ttk.Combobox(self.header_frame, values=self.colour_codes, width=10)
+        self.format_combobox = ttk.Combobox(self.header_frame, values=self.colour_codes, width=5)
         self.format_combobox.set("hex")
         self.format_combobox.grid(row=0, column=4)
 
@@ -129,7 +130,6 @@ class ColourCoperUI:
     '''
     # Launch the window in the centre of the screen.
     def centre_launch(self, window, window_width=960, window_height=540):
- 
         center_x, center_y = self.get_screen_centre()
 
         # set the position of the window to the center of the screen
@@ -175,6 +175,7 @@ class ColourCoperUI:
         # 1. Create the top-level pop-up window
         popup = tk.Toplevel(self.root)
         popup.title("Add Swatch")
+        popup.resizable(False, False)
 
         # Launch the popup in the centre of the root window.
         self.centre_launch_popup(popup, 260, 150)
@@ -196,7 +197,7 @@ class ColourCoperUI:
         ent_name.focus_set()  # Automatically place cursor in this box
 
         # 3. Hex Entry Widget
-        lbl_hex = tk.Label(popup, text="Hex Code:")
+        lbl_hex = tk.Label(popup, text="Hex Code: #")
         lbl_hex.grid(row=1, column=0, sticky="w", pady=5)
         
         ent_hex = tk.Entry(popup)
@@ -243,6 +244,7 @@ class ColourCoperUI:
         popup.grab_set()
         popup.columnconfigure(1, weight=1)
         popup.config(padx=15, pady=15)
+        popup.resizable(False, False)
 
         # Open the popup in the centre of the root window.
         self.centre_launch_popup(popup, 300, 130)
