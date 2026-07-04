@@ -182,7 +182,7 @@ class ColourCoperUI:
         
         # Make the popup modal (blocks interaction with main window)
         popup.transient(self.root)   # Keeps popup on top of main window [2]
-        popup.grab_set()        # Directs all events to this window [1, 3]
+        popup.grab_set()             # Directs all events to this window [1, 3]
         
         # Configure layout spacing for the popup
         popup.columnconfigure(1, weight=1)
@@ -202,12 +202,12 @@ class ColourCoperUI:
         
         ent_hex = tk.Entry(popup)
         ent_hex.grid(row=1, column=1, sticky="ew", padx=(10, 0), pady=5)
-        ent_hex.insert(0, "#")  # Pre-fill with hashtag as a helper
+
 
         # 4. Action Functions
         def save_action():
             name_data = ent_name.get().strip()
-            hex_data = ent_hex.get().strip()
+            hex_data = f"#{ent_hex.get().strip()}"
             
             # Simple validation check
             if not name_data or not hex_data:
