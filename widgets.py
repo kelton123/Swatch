@@ -239,6 +239,9 @@ class Swatch(tk.Frame):
         # UI Styling configurations
         lbl_opts = {"bg": self.hex_code, "fg": text_color, "anchor": "w"}
         
+        # Add a padding for column 1
+        self.columnconfigure(1, weight=2)
+
         # Swatch Name Label
         lbl_title = tk.Label(self, text=self.label_text, font=("Arial", 20, "bold"), **lbl_opts)
         lbl_title.grid(row=0, column=0, sticky="w", padx=(10, 0), pady=(10, 15))
@@ -246,7 +249,7 @@ class Swatch(tk.Frame):
         # Delete button
         delete_button = tk.Label(self, text = "✕", font = ("Arial", 14), **lbl_opts)
         delete_button.bind("<Button-1>", lambda event: self.close_swatch())
-        delete_button.grid(row = 0, column = 1, sticky = "e", padx = (0, 10), pady = (10, 15))
+        delete_button.grid(row = 0, column = 2, sticky = "e", padx = (0, 10), pady = (10, 15))
         
         # Colour Code Label
         self.colour_code_value = tk.Label(self, text = f"{self.hex_code}", font=("Arial", 14), **lbl_opts)
@@ -258,7 +261,7 @@ class Swatch(tk.Frame):
 
         icon_copy_label = tk.Label(self, image=icon_copy, **lbl_opts)
         icon_copy_label.image = icon_copy 
-        icon_copy_label.grid(row=1, column=1, sticky="e", padx = (0, 10), pady = (2,10))
+        icon_copy_label.grid(row=1, column=2, sticky="e", padx = (0, 10), pady = (2,10))
 
 
         self.colour_code_value.config(cursor="hand2")
