@@ -78,7 +78,7 @@ class ColourCoperUI:
         self.add_notebook.grid(row=0, column=2)
 
         # Tint adjustment
-        self.tint_entry = tk.Entry(self.header_frame, width=5)
+        self.tint_entry = tk.Entry(self.header_frame, width=5,highlightbackground=cl.CC_WHITE)
         self.tint_entry.insert(0, "100%")  # Pre-fill with hashtag as a helper
         self.tint_entry.grid(row=0, column=3)
 
@@ -86,7 +86,7 @@ class ColourCoperUI:
         # Dropdown options  
         self.colour_codes = ["hex", "rgb", "cmyk", "hsl", "css"]
 
-        self.format_combobox = ttk.Combobox(self.header_frame, values=self.colour_codes, width=5)
+        self.format_combobox = ttk.Combobox(self.header_frame, values=self.colour_codes, width=5, state="readonly")
         self.format_combobox.set("hex")
         self.format_combobox.grid(row=0, column=4)
 
