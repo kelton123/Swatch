@@ -197,7 +197,8 @@ class Swatch(tk.Frame):
         lbl_title.grid(row=0, column=0, sticky="w", padx=(10, 0), pady=(10, 15))
 
         # Delete button
-        delete_button = tk.Button(self, text = "✕", font = ("Arial", 14), highlightbackground = self.hex_code, fg = cl.CC_BLACK, command=self.close_swatch)
+        delete_button = tk.Label(self, text = "✕", font = ("Arial", 14), **lbl_opts)
+        delete_button.bind("<Button-1>", lambda event: self.close_swatch())
         delete_button.grid(row = 0, column = 1, sticky = "e", padx = (0, 10), pady = (10, 15))
         
         # Colour Code Label
