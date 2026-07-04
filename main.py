@@ -287,12 +287,8 @@ class ColourCoperUI:
         tab_frame = tk.Frame(self.notebook, bg=cl.CC_WHITE)
         self.notebook.add(tab_frame, text=name)
 
-        add_button = widgets.ButtonNewSwatch(tab_frame, command=lambda: self.open_swatch_popup(tab_frame))
-        add_button.grid(row=0, column=0, padx=5, pady=5)
-
         self.tabs[tab_frame] = {
             "name": name,
-            "add_button": add_button,
             "filepath": None,
             "dirty": False,
         }
@@ -346,7 +342,6 @@ class ColourCoperUI:
         swatches = [w for w in tab_id.winfo_children() if isinstance(w, widgets.Swatch)]
         for i, swatch in enumerate(swatches):
             swatch.grid(row=0, column=i, padx=5, pady=5)
-        tab["add_button"].grid(row=0, column=len(swatches), padx=5, pady=5)
 
     def _on_swatch_removed(self, tab_id):
         self._regrid_tab(tab_id)
