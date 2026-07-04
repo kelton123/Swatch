@@ -334,10 +334,13 @@ class ColourCoperUI:
         # get the value of the format combobox
         format_value = event.widget.get()
         
-        active_tab_id = self._get_active_tab_id()
-        swatches = [w for w in active_tab_id.winfo_children() if isinstance(w, widgets.Swatch)]
-        for i, swatch in enumerate(swatches):
-            swatch.update_colour_code_label(format_value)
+        # Loop through each tab id and then all of the swatches in each open tab
+        for tab in self.tabs:
+            # Get all of the swatches inside the tab to update the labels on.
+            swatches = [w for w in tab.winfo_children() if isinstance(w, widgets.Swatch)]
+            # Update each swatch's label text with the new colour code format.
+            for i, swatch in enumerate(swatches):
+                swatch.update_colour_code_label(format_value)
 
     # Add a swatch into a tab and lay it out next to the tab's "+" button
     def _add_swatch_to_tab(self, tab_id, label_text, hex_code, mark_dirty=True):
