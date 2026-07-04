@@ -203,7 +203,6 @@ class ColourCoperUI:
         ent_hex = tk.Entry(popup)
         ent_hex.grid(row=1, column=1, sticky="ew", padx=(10, 0), pady=5)
 
-
         # 4. Action Functions
         def save_action():
             name_data = ent_name.get().strip()
@@ -223,6 +222,9 @@ class ColourCoperUI:
 
             popup.destroy()  # Close the popup window after saving [3]
 
+        def _save_action_shortcut(slef):
+            save_action()
+
         # 5. Buttons Layout Frame (at the bottom)
         btn_frame = tk.Frame(popup)
         btn_frame.grid(row=2, column=0, columnspan=2, sticky="ew", pady=(20, 0))
@@ -235,6 +237,10 @@ class ColourCoperUI:
         # Save Button
         btn_save = tk.Button(btn_frame, text="Save", command=save_action)
         btn_save.grid(row=0, column=2, padx=5)
+
+        #lbl_hex.bind("<Return>", save_action)
+        #ent_name.bind("<Return>", save_action)
+        popup.bind("<Return>", _save_action_shortcut)
 
     # Create a new, empty project tab via a name-entry pop-up
     def new_project_tab(self):
