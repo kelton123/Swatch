@@ -135,6 +135,20 @@ class ColourCoperUI:
         # set the position of the window to the center of the screen
         window.geometry(f'{window_width}x{window_height}+{center_x}+{center_y}')
 
+    def centre_launch_popup(self, window, window_width, window_height):
+        # Get the current position and size of the root window
+        root_x = self.root.winfo_x()
+        root_y = self.root.winfo_y()
+        root_width = self.root.winfo_width()
+        root_height = self.root.winfo_height()
+        
+        # Calculate the exact offsets to center the popup
+        x_coord = int(root_x + (root_width - window_width) / 2)
+        y_coord = int(root_y + (root_height - window_height) / 2)
+        
+        # Apply the geometry string (coordinates must be integers)
+        window.geometry(f"{window_width}x{window_height}+{x_coord}+{y_coord}")
+
     # Get the centre coordinates of the user's screen
     def get_screen_centre(self):
         # get the screen dimension
@@ -161,9 +175,9 @@ class ColourCoperUI:
         # 1. Create the top-level pop-up window
         popup = tk.Toplevel(self.root)
         popup.title("Add Swatch")
-        popup.geometry("260x150")
 
-        self.centre_launch(popup, 260, 150)
+        # Launch the popup in the centre of the root window.
+        self.centre_launch_popup(popup, 260, 150)
         
         # Make the popup modal (blocks interaction with main window)
         popup.transient(self.root)   # Keeps popup on top of main window [2]
@@ -225,13 +239,13 @@ class ColourCoperUI:
     def new_project_tab(self):
         popup = tk.Toplevel(self.root)
         popup.title("New Project Tab")
-        popup.geometry("300x140")
         popup.transient(self.root)
         popup.grab_set()
         popup.columnconfigure(1, weight=1)
         popup.config(padx=15, pady=15)
 
-        self.centre_launch(popup, 300, 140)
+        # Open the popup in the centre of the root window.
+        self.centre_launch_popup(popup, 300, 130)
 
         lbl_name = tk.Label(popup, text="Project Name:")
         lbl_name.grid(row=0, column=0, sticky="w", pady=5)
