@@ -130,7 +130,7 @@ class LabelFooter(tk.Label):
 
 
 class Swatch(tk.Frame):
-    def __init__(self, parent, label_text, hex_code, on_delete=None, **kwargs):
+    def __init__(self, parent, label_text, hex_code, on_delete=None, active_format="hex", **kwargs):
         defaults = {
             "bg": hex_code,
             "height": 20,
@@ -152,7 +152,7 @@ class Swatch(tk.Frame):
         self.hsl_code   = self._hex_to_hsl(hex_code)
 
         self.formats = ["hex", "rgb", "cmyk", "hsl", "css"]
-        self.active_format = "hex"
+        self.active_format = active_format
 
         # Create the card UI widgets.
         self._create_widgets()
@@ -252,7 +252,9 @@ class Swatch(tk.Frame):
         delete_button.grid(row = 0, column = 2, sticky = "e", padx = (0, 10), pady = (10, 15))
         
         # Colour Code Label
-        self.colour_code_value = tk.Label(self, text = f"{self.hex_code}", font=("Arial", 14), **lbl_opts)
+        active_colour_code = self._get_active_colour_code()
+
+        self.colour_code_value = tk.Label(self, text = f"{active_colour_code}", font=("Arial", 14), **lbl_opts)
         self.colour_code_value.grid(row = 1, column = 0, sticky = "w", padx = (10, 0), pady = (2,10))
 
         icon_copy_light = PhotoImage(file="Light_copy_icon.png")
@@ -282,7 +284,7 @@ class Swatch(tk.Frame):
 
             match self.active_format:
                 case "hex":
-                    colour_code_to_copy = self.hex_code
+                    colour_code_to_copy = self.hex_code[1:]
                 case "rgb":
                     colour_code_to_copy = self.rgb_code
                 case "cmyk":
@@ -317,6 +319,19 @@ class Swatch(tk.Frame):
                 self.active_format = "hsl"
             case _:
                 self.colour_code_value.config(text=self.hex_code)
+
+    def _get_active_colour_code(self):
+        match self.active_format:
+            case "hex":
+                return self.hex_code
+            case "rgb":
+                return self.rgb_code
+            case "cmyk":
+                return self.cmyk_code
+            case "hsl":
+                return self.hsl_code
+            case _:
+                return self.hex_code
 
     def close_swatch(self):
         self.destroy()

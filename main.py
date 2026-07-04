@@ -351,6 +351,7 @@ class ColourCoperUI:
             # Update each swatch's label text with the new colour code format.
             for i, swatch in enumerate(swatches):
                 swatch.update_colour_code_label(format_value)
+                swatch.active_format = format_value
 
     # Add a swatch into the active tab
     def _add_swatch_to_tab(self, tab_id, label_text, hex_code, mark_dirty=True):
@@ -359,8 +360,9 @@ class ColourCoperUI:
             label_text=label_text,
             hex_code=hex_code,
             on_delete=lambda: self._on_swatch_removed(tab_id),
+            active_format=self._get_active_format()
         )  # raises ValueError for an invalid hex code
-        
+
         self._regrid_tab(tab_id)
         if mark_dirty:
             self._mark_dirty(tab_id)
@@ -380,6 +382,10 @@ class ColourCoperUI:
     def _get_tab_swatches_data(self, tab_id):
         swatches = [w for w in tab_id.winfo_children() if isinstance(w, widgets.Swatch)]
         return [{"label": sw.label_text, "hex": sw.hex_code} for sw in swatches]
+
+    # Get the active colour format from the drop down list
+    def _get_active_format(self):
+        return self.format_combobox.get()
 
     '''
     SAVE / LOAD
