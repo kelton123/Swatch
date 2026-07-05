@@ -18,7 +18,6 @@ import colours as cl
 CONSTANTS
 '''
 WINDOW_PADDING = 40
-DATA_FILE = "swatches.json"
         
 
 class ColourCoperUI:
@@ -65,7 +64,7 @@ class ColourCoperUI:
         
         |[project name]                 [save][load]|
         '''
-        # Configure column 1 to expand and create white space.
+        # Configure column 1 and 5 to expand and create white space.
         self.header_frame.columnconfigure(1, weight=2)
         self.header_frame.columnconfigure(5, weight=2)
 
@@ -122,8 +121,16 @@ class ColourCoperUI:
         '''
         FOOTER SECTION
         '''
+        # Configure column 1 to expand and create white space.
+        self.footer_frame.columnconfigure(0, weight=2)
+        self.footer_frame.columnconfigure(2, weight=2)
+
         footer_text = widgets.LabelFooter(self.footer_frame, text = "Designed & Developed by Kelton Boyter-Grant", bg = cl.CC_WHITE)
-        footer_text.pack(padx=20, pady=20, anchor="center")
+        footer_text.grid(row=0, column=1, padx=20, pady=(0, 20))
+
+        # Contains some helpful information for first time users if they need it.
+        self.help_button = tk.Button(self.footer_frame, text="?", highlightbackground=cl.CC_WHITE, command=self.open_help_popup)
+        self.help_button.grid(row=0, column=3, pady=(0,20), padx=0)
 
         '''
         KEYBOARD BINDINGS
@@ -545,6 +552,53 @@ class ColourCoperUI:
         self.tabs[tab_id]["dirty"] = False
         self._update_tab_label(tab_id)
 
+    '''
+    HELP BUTTON POPUP
+    '''
+    def open_help_popup(self, event=None):
+        # 1. Create the top-level pop-up window
+        popup = tk.Toplevel(self.root, bg=cl.CC_WHITE)
+        popup.title("Information")
+        popup.resizable(False, False)
+
+        # Launch the popup in the centre of the root window.
+        self.centre_launch_popup(popup, 400, 260)
+        
+        # Make the popup modal (blocks interaction with main window)
+        popup.transient(self.root)   # Keeps popup on top of main window [2]
+        popup.grab_set()             # Directs all events to this window [1, 3]
+
+        # List of information
+        information_text = (f"Swatch is an app focused on colour management "
+                             "across design disiplines to help organise "
+                             "the project colour palettes.")
+
+        popup_heading = tk.Message(popup, text=information_text, font=("Arial", 14), bg=cl.CC_WHITE, fg=cl.CC_BLACK, width=370)
+        popup_heading.pack(anchor="nw", padx=20, pady=(20,0), expand=True)
+
+        # Keyboard shortcuts
+        keyboard_shortcuts_heading = tk.Message(popup, text="Keyboard shortcuts", font=("Arial", 14, "bold"), bg=cl.CC_WHITE, fg=cl.CC_BLACK, width=380)
+        keyboard_shortcuts_heading.pack(anchor="nw", padx=20, pady=0, expand=True)
+
+        keyboard_shortcuts = ("• Save: ⌘ + s\n"
+                             "• Load: ⌘ + l\n"
+                             "• New project tab: ⌘ + p\n"
+                             "• New swatch: ⌘ + n\n"
+                             "• Cycle colour formats: ⌘ + f\n")
+        
+        keyboard_shortcuts_label = tk.Message(popup, text=keyboard_shortcuts, font=("Arial", 14), bg=cl.CC_WHITE, fg=cl.CC_BLACK, width=380)
+        keyboard_shortcuts_label.pack(anchor="nw", padx=20, pady=0, expand=True)
+
+        # Close button
+        btn_close = tk.Button(popup, text="Close", highlightbackground=cl.CC_WHITE, command=popup.destroy)
+        btn_close.pack(padx=20, pady=(0,20), anchor="sw")
+
+        def close_popup(self):
+            popup.destroy()
+
+        # Keyboard bindings
+        popup.bind("<Escape>", close_popup)
+        popup.bind("<Return>", close_popup)
 
 '''
 TKINTER ENTRY POINT
