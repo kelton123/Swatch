@@ -216,6 +216,9 @@ class ColourCoperUI:
     # Add a new swatch in the active tab
     def add_new_swatch(self, event=None):
         active_tab_id = self._get_active_tab_id()
+        if active_tab_id is None:
+            messagebox.showwarning("Warning", "No project tab to add new swatch to!", parent=self.root)
+            return
         self.open_swatch_popup(active_tab_id)
 
     # Create a new swatch inside the given tab
