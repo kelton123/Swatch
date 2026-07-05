@@ -277,6 +277,7 @@ class Swatch(tk.Frame):
 
         # Bind keyboard inputs
         self.colour_code_value.bind("<Button-1>", lambda e: copy_to_clipboard(self.colour_code_value))
+        self.bind("<Button-1>", lambda event: copy_to_clipboard(self.colour_code_value))
     
         def copy_to_clipboard(widget):
             """
