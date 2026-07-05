@@ -93,7 +93,7 @@ class ColourCoperUI:
         self.format_combobox.bind("<<ComboboxSelected>>", self.update_all_swatches_label)
 
         # Add a new tab for swatches.
-        self.add_notebook = tk.Button(self.header_frame, text="new", highlightbackground = cl.CC_WHITE, command=self.new_project_tab)
+        self.add_notebook = tk.Button(self.header_frame, text="new", highlightbackground = cl.CC_WHITE, command=self.add_new_project_tab)
         self.add_notebook.grid(row=0, column=6)
 
         # Save swatch palette button aligned to the right of the window.
@@ -140,7 +140,13 @@ class ColourCoperUI:
         self.root.bind("<Command-n>", self.add_new_swatch)
         self.root.bind("<Command-N>", self.add_new_swatch)
 
+        # Cycle the dropdown box of colour formats
         self.root.bind("<Command-f>", self.cycle_colour_format)
+        self.root.bind("<Command-F>", self.cycle_colour_format)
+
+        # Create a new project tab
+        self.root.bind("<Command-p>", self.add_new_project_tab)
+        self.root.bind("<Command-P>", self.add_new_project_tab)
 
 
     '''
@@ -289,7 +295,7 @@ class ColourCoperUI:
         popup.bind("<Escape>", close_popup)
 
     # Create a new, empty project tab via a name-entry pop-up
-    def new_project_tab(self):
+    def add_new_project_tab(self, event=None):
         popup = tk.Toplevel(self.root)
         popup.title("New Project Tab")
         popup.transient(self.root)
