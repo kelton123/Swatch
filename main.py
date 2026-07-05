@@ -196,6 +196,9 @@ class ColourCoperUI:
         
         self.format_combobox.set(new_format)
 
+        # Update the swatch widget labels
+        self.update_all_swatches_label()
+
 
     # Add a new swatch in the active tab
     def add_new_swatch(self, event=None):
@@ -380,9 +383,9 @@ class ColourCoperUI:
     '''
 
     # Update swatch label to reflect the format in the menu combobox
-    def update_all_swatches_label(self, event):
+    def update_all_swatches_label(self, event=None):
         # get the value of the format combobox
-        format_value = event.widget.get()
+        format_value = self.format_combobox.get()
         
         # Loop through each tab id and then all of the swatches in each open tab
         for tab in self.tabs:
