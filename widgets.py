@@ -243,8 +243,15 @@ class Swatch(tk.Frame):
         self.columnconfigure(1, weight=2)
 
         # Swatch Name Label
-        lbl_title = tk.Label(self, text=self.label_text, font=("Arial", 20, "bold"), **lbl_opts)
-        lbl_title.grid(row=0, column=0, sticky="w", padx=(10, 0), pady=(10, 15))
+        # Reduce the font size if there are more than 10 characters in the swatch name.
+        font_size = 20
+        pad_y = (10,15)
+        if len(self.label_text) > 10:
+            font_size = 14
+            pad_y = (13,20)
+
+        lbl_title = tk.Label(self, text=self.label_text, font=("Arial", font_size, "bold"), **lbl_opts)
+        lbl_title.grid(row=0, column=0, sticky="w", padx=(10, 0), pady=pad_y)
 
         # Delete button
         delete_button = tk.Label(self, text = "✕", font = ("Arial", 14), **lbl_opts)

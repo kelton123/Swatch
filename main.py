@@ -8,6 +8,7 @@ import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
 from tkinter import filedialog
+import _tkinter # For tkinter errors
 
 import widgets as widgets
 import colours as cl
@@ -205,18 +206,26 @@ class ColourCoperUI:
 
         # 4. Action Functions
         def save_action():
-            name_data = ent_name.get().strip()
-            hex_data = f"#{ent_hex.get().strip()}"
-            
+            name_data = ent_name.get().strip().capitalize()
+            hex_data  = ent_hex.get().strip()
+
             # Simple validation check
             if not name_data or not hex_data:
                 messagebox.showwarning("Warning", "Both fields are required!", parent=popup)
                 return
+            
+            # Check for name length
+            if len(name_data) > 20:
+                messagebox.showwarning("Warning", "Name too long. Please keep the name under 20 characters", parent=popup)
+                return
                 
             # Create a new swatch widget from the user's input values.
             try:
+                # Add the leading # to the hex string
+                hex_data = f"#{hex_data}"
+
                 self._add_swatch_to_tab(tab_id, name_data, hex_data)
-            except ValueError:
+            except _tkinter.TclError:
                 messagebox.showwarning("Warning", "Please enter a valid hex code, e.g. #FF8D28", parent=popup)
                 return
 
