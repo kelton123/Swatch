@@ -371,8 +371,35 @@ class ColourCoperUI:
     def _regrid_tab(self, tab_id):
         tab = self.tabs[tab_id]
         swatches = [w for w in tab_id.winfo_children() if isinstance(w, widgets.Swatch)]
-        for i, swatch in enumerate(swatches):
-            swatch.grid(row=0, column=i, padx=5, pady=5)
+
+        # Get the width of the notebook tab frame in avoid swatches clipping out of view.
+        notebook_width = self.notebook.winfo_width()
+
+        # Defind padding amount
+        pad_x = 5
+        pad_y = 5
+
+        # Keep track of how the grid is populating to allow multi-row layouts
+        current_row       = 0
+        current_column     = 0
+        current_row_width = 0
+
+        for swatch in swatches:
+            # Get the swatch width and add it to the total row width
+            swatch_width = swatch.winfo_reqwidth() + (pad_x * 2)
+
+            # Compare the current row width with the notebook row to determine if this swatch should be on a new row
+            if current_row_width + swatch_width > notebook_width and current_column > 0:
+                current_row   += 1
+                current_column = 0
+                current_row_width = 0
+
+            # Add the swatch to the correct row and column location
+            swatch.grid(row=current_row, column=current_column, padx=pad_x, pady=pad_y)
+
+            # Update variables for the next iteration
+            current_row_width += swatch_width
+            current_column    += 1
 
     def _on_swatch_removed(self, tab_id):
         self._regrid_tab(tab_id)
