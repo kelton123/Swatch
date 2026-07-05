@@ -125,6 +125,23 @@ class ColourCoperUI:
         footer_text = widgets.LabelFooter(self.footer_frame, text = "Designed & Developed by Kelton Boyter-Grant", bg = cl.CC_WHITE)
         footer_text.pack(padx=20, pady=20, anchor="center")
 
+        '''
+        KEYBOARD BINDINGS
+        '''
+        # Save the active tab swatches
+        self.root.bind("<Command-s>", self.save_active_tab)
+        self.root.bind("<Command-S>", self.save_active_tab)
+
+        # Load a swatch file
+        self.root.bind("<Command-l>", self.load_project_tab)
+        self.root.bind("<Command-L>", self.load_project_tab)
+
+        # Add a new swatch
+        self.root.bind("<Command-n>", self.add_new_swatch)
+        self.root.bind("<Command-N>", self.add_new_swatch)
+
+        self.root.bind("<Command-f>", self.cycle_colour_format)
+
 
     '''
     UI FUNCTIONS
@@ -164,10 +181,24 @@ class ColourCoperUI:
         center_y = int(screen_height/2 - window_height / 2)
 
         return center_x, center_y
+    
+    def cycle_colour_format(self, event=None):
+        # Get the current format
+        current_format = self.format_combobox.get()
+
+        # Get position in the master list of formats
+        current_index = self.colour_codes.index(current_format)
+
+        if current_index == len(self.colour_codes) -1:
+            current_index = -1
+
+        new_format = self.colour_codes[current_index + 1]
+        
+        self.format_combobox.set(new_format)
 
 
     # Add a new swatch in the active tab
-    def add_new_swatch(self):
+    def add_new_swatch(self, event=None):
         active_tab_id = self._get_active_tab_id()
         self.open_swatch_popup(active_tab_id)
 
@@ -427,8 +458,9 @@ class ColourCoperUI:
     SAVE / LOAD
     '''
 
-    # Save only the active tab's swatches to a JSON file
-    def save_active_tab(self):
+    # Save only the active tab's swatches to a JSON file wrapped in a custom file format .SWA
+    # By default save as a .SWA as a JSON and the option for .ASE for Adobe software
+    def save_active_tab(self, event=None):
         tab_id = self._get_active_tab_id()
         if tab_id is None:
             return
@@ -467,7 +499,7 @@ class ColourCoperUI:
         self._remove_tab(tab_id)
 
     # Load a previously saved JSON file into a new tab
-    def load_project_tab(self):
+    def load_project_tab(self, event=None):
         filepath = filedialog.askopenfilename(
             title="Load Project Tab",
             filetypes=[("JSON files", "*.json")],
