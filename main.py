@@ -104,7 +104,7 @@ class ColourCoperUI:
         self.load_button.grid(row = 0, column = 8)
 
         # Delete swatches palette button aligned to the right of the window.
-        self.delete_palette_button = tk.Button(self.header_frame, highlightbackground=cl.CC_WHITE, text="delete", command=self.delete_active_tab)
+        self.delete_palette_button = tk.Button(self.header_frame, highlightbackground=cl.CC_WHITE, text="delete", command=self._open_delete_tab_popup)
         self.delete_palette_button.grid(row=0, column=9)
 
         '''
@@ -138,6 +138,10 @@ class ColourCoperUI:
         # Save the active tab swatches
         self.root.bind("<Command-s>", self.save_active_tab)
         self.root.bind("<Command-S>", self.save_active_tab)
+
+        # Delete the active tab
+        self.root.bind("<Command-d>", self._open_delete_tab_popup)
+        self.root.bind("<Command-D>", self._open_delete_tab_popup)
 
         # Load a swatch file
         self.root.bind("<Command-l>", self.load_project_tab)
@@ -372,10 +376,58 @@ class ColourCoperUI:
 
     # Remove a tab entirely (used when loading replaces an empty first tab,
     # and by the "delete" button)
-    def _remove_tab(self, tab_id):
-        self.tabs.pop(tab_id, None)
-        self.notebook.forget(tab_id)
-        tab_id.destroy()
+    def _remove_tab(self, event=None):
+        active_tab_id = self._get_active_tab_id()
+
+        if active_tab_id is None:
+            raise ValueError
+
+        self.tabs.pop(active_tab_id, None)
+        self.notebook.forget(active_tab_id)
+        active_tab_id.destroy()
+
+    # Open a popup to confirm if the user wants to delete a project tab.
+    def _open_delete_tab_popup(self, event=None):
+        # Create the top-level pop-up window
+        popup = tk.Toplevel(self.root, bg=cl.CC_WHITE)
+        popup.title("Delete Project Tab")
+        popup.resizable(False, False)
+
+        # Launch the popup in the centre of the root window.
+        self.centre_launch_popup(popup, 300, 130)
+        
+        # Make the popup modal (blocks interaction with main window)
+        popup.transient(self.root)   # Keeps popup on top of main window [2]
+        popup.grab_set()             # Directs all events to this window [1, 3]
+
+        confirmation_message = tk.Message(popup, text=f"Are you sure you want to delete the current project tab?\nAll unsave swatches will be lost.", font=("Arial", 14), bg=cl.CC_WHITE, fg=cl.CC_BLACK, width=280)
+        confirmation_message.grid(row=0, column=0, sticky="w", pady=5, padx=10)
+
+        btn_frame = tk.Frame(popup, bg=cl.CC_WHITE)
+        btn_frame.grid(row=1, column=0, columnspan=2, sticky="ew", pady=(20, 10), padx=10)
+        btn_frame.columnconfigure(1, weight=1)
+
+
+        def confirm(event=None):
+            try:
+                self.delete_active_tab()
+            except ValueError:
+                messagebox.showwarning("Warning", "No project tabs to delete!", parent=popup)
+                return
+            
+            popup.destroy()
+
+        def destroy_popup(self, event=None):
+            popup.destroy()
+
+        btn_close = tk.Button(btn_frame, text="Cancel", highlightbackground=cl.CC_WHITE, command=destroy_popup)
+        btn_close.grid(row=0, column=0, padx=10, pady=0)
+
+        btn_create = tk.Button(btn_frame, text="Confirm", highlightbackground=cl.CC_WHITE, command=confirm)
+        btn_create.grid(row=0, column=2, padx=10, pady=0)
+
+        popup.bind("<Return>", confirm)
+        popup.bind("<Escape>", destroy_popup)
 
     # The frame currently shown by the Notebook, or None if there are no tabs
     def _get_active_tab_id(self):
@@ -510,7 +562,7 @@ class ColourCoperUI:
         self._update_tab_label(tab_id)
 
     # Delete the active tab
-    def delete_active_tab(self):
+    def delete_active_tab(self, event=None):
         tab_id = self._get_active_tab_id()
         if tab_id is None:
             return
@@ -559,7 +611,7 @@ class ColourCoperUI:
     HELP BUTTON POPUP
     '''
     def open_help_popup(self, event=None):
-        # 1. Create the top-level pop-up window
+        # Create the top-level pop-up window
         popup = tk.Toplevel(self.root, bg=cl.CC_WHITE)
         popup.title("Information")
         popup.resizable(False, False)
