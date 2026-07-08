@@ -66,21 +66,17 @@ class ColourCoperUI:
         '''
         # Configure column 1 and 5 to expand and create white space.
         self.header_frame.columnconfigure(1, weight=2)
-        self.header_frame.columnconfigure(5, weight=2)
+        self.header_frame.columnconfigure(4, weight=2)
 
         # Project name label aligned to the left of the window.
         self.project_heading = widgets.LabelHeading(self.header_frame, text = "Swatch")
         self.project_heading.grid(row = 0, column = 0, sticky = "w", pady = 20)
 
         # SWATCH TOOLS
-        # Add a new tab for swatches.
-        self.add_notebook = tk.Button(self.header_frame, text="add", highlightbackground = cl.CC_WHITE, command=self.add_new_swatch)
-        self.add_notebook.grid(row=0, column=2)
-
         # Tint adjustment
         self.tint_entry = tk.Entry(self.header_frame, width=5,highlightbackground=cl.CC_WHITE)
         self.tint_entry.insert(0, "100%")  # Pre-fill with hashtag as a helper
-        self.tint_entry.grid(row=0, column=3)
+        self.tint_entry.grid(row=0, column=2)
 
         # Colour code format dropdown
         # Dropdown options  
@@ -88,11 +84,17 @@ class ColourCoperUI:
 
         self.format_combobox = ttk.Combobox(self.header_frame, values=self.colour_codes, width=5, state="readonly")
         self.format_combobox.set("hex")
-        self.format_combobox.grid(row=0, column=4)
+        self.format_combobox.grid(row=0, column=3)
         self.format_combobox.bind("<<ComboboxSelected>>", self.update_all_swatches_label)
 
+        # Eyedropper tool to create a swatch
+
         # Add a new tab for swatches.
-        self.add_notebook = tk.Button(self.header_frame, text="new", highlightbackground = cl.CC_WHITE, command=self.add_new_project_tab)
+        self.add_notebook = tk.Button(self.header_frame, text="new swatch", highlightbackground = cl.CC_WHITE, command=self.add_new_swatch)
+        self.add_notebook.grid(row=0, column=5)
+
+        # Add a new tab for swatches.
+        self.add_notebook = tk.Button(self.header_frame, text="new project", highlightbackground = cl.CC_WHITE, command=self.add_new_project_tab)
         self.add_notebook.grid(row=0, column=6)
 
         # Save swatch palette button aligned to the right of the window.
