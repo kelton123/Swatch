@@ -9,6 +9,7 @@ from tkinter import ttk
 from tkinter import messagebox
 from tkinter import filedialog
 import _tkinter # For tkinter errors
+from PIL import ImageGrab, ImageTk
 
 import widgets as widgets
 import colours as cl
@@ -18,6 +19,12 @@ import colours as cl
 CONSTANTS
 '''
 WINDOW_PADDING = 40
+
+def clamp(x): 
+  return max(0, min(x, 255))
+
+def rgb_to_hex(r,g,b,a=None):
+    return "{0:02x}{1:02x}{2:02x}".format(clamp(r), clamp(g), clamp(b))
         
 
 class ColourCoperUI:
@@ -66,7 +73,7 @@ class ColourCoperUI:
         '''
         # Configure column 1 and 5 to expand and create white space.
         self.header_frame.columnconfigure(1, weight=2)
-        self.header_frame.columnconfigure(4, weight=2)
+        self.header_frame.columnconfigure(5, weight=2)
 
         # Project name label aligned to the left of the window.
         self.project_heading = widgets.LabelHeading(self.header_frame, text = "Swatch")
@@ -88,26 +95,28 @@ class ColourCoperUI:
         self.format_combobox.bind("<<ComboboxSelected>>", self.update_all_swatches_label)
 
         # Eyedropper tool to create a swatch
+        self.eyedrop_button = tk.Button(self.header_frame, text="eyedrop", highlightbackground=cl.CC_WHITE, command=self.start_eyedropper)
+        self.eyedrop_button.grid(row=0, column=4)
 
         # Add a new tab for swatches.
         self.add_notebook = tk.Button(self.header_frame, text="new swatch", highlightbackground = cl.CC_WHITE, command=self.add_new_swatch)
-        self.add_notebook.grid(row=0, column=5)
+        self.add_notebook.grid(row=0, column=6)
 
         # Add a new tab for swatches.
         self.add_notebook = tk.Button(self.header_frame, text="new project", highlightbackground = cl.CC_WHITE, command=self.add_new_project_tab)
-        self.add_notebook.grid(row=0, column=6)
+        self.add_notebook.grid(row=0, column=7)
 
         # Save swatch palette button aligned to the right of the window.
         self.save_button = tk.Button(self.header_frame, highlightbackground = cl.CC_WHITE, text = "save", command = self.save_active_tab)
-        self.save_button.grid(row = 0, column = 7)
+        self.save_button.grid(row = 0, column = 8)
 
         # Load swatches palette button aligned to the right of the window.
         self.load_button = tk.Button(self.header_frame, highlightbackground = cl.CC_WHITE, text = "load", command = self.load_project_tab)
-        self.load_button.grid(row = 0, column = 8)
+        self.load_button.grid(row = 0, column = 9)
 
         # Delete swatches palette button aligned to the right of the window.
         self.delete_palette_button = tk.Button(self.header_frame, highlightbackground=cl.CC_WHITE, text="delete", command=self._open_delete_tab_popup)
-        self.delete_palette_button.grid(row=0, column=9)
+        self.delete_palette_button.grid(row=0, column=10)
 
         '''
         TAB SECTION
@@ -228,7 +237,7 @@ class ColourCoperUI:
         self.open_swatch_popup(active_tab_id)
 
     # Create a new swatch inside the given tab
-    def open_swatch_popup(self, tab_id):
+    def open_swatch_popup(self, tab_id, hex=None):
         # 1. Create the top-level pop-up window
         popup = tk.Toplevel(self.root)
         popup.title("Add Swatch")
@@ -260,10 +269,16 @@ class ColourCoperUI:
         ent_hex = tk.Entry(popup)
         ent_hex.grid(row=1, column=1, sticky="ew", padx=(10, 0), pady=5)
 
+        if hex:
+            ent_hex.insert(0, hex)
+
         # 4. Action Functions
         def save_action():
             name_data = ent_name.get().strip().capitalize()
             hex_data  = ent_hex.get().strip()
+
+            if hex_data is None and hex is not None:
+                hex_data = hex
 
             # Simple validation check
             if not name_data or not hex_data:
@@ -355,6 +370,54 @@ class ColourCoperUI:
         # Bind keyboard inputs
         popup.bind("<Escape>", close_popup)
         popup.bind("<Return>", create_action)
+
+    # EYEDROPPER FUNCTIONS
+    def start_eyedropper(self):
+        # 1. Hide the main window so it doesn't appear in the screenshot
+        self.root.withdraw()
+        
+        # Force a UI update and add a tiny delay to ensure the window is hidden
+        self.root.update()
+        self.root.after(50, self.take_screenshot_and_show_overlay)
+
+    def take_screenshot_and_show_overlay(self):
+        # 2. Capture the entire screen
+        self.screen_img = ImageGrab.grab()
+
+        # 3. Create a fullscreen, borderless overlay window
+        self.overlay = tk.Toplevel(self.root)
+        self.overlay.attributes("-fullscreen", True)
+        self.overlay.attributes("-topmost", True) # Keep it above all other apps
+        self.overlay.config(cursor="crosshair")   # Change cursor to a crosshair
+
+        # 4. Display the screenshot on a Canvas
+        self.tk_img = ImageTk.PhotoImage(self.screen_img)
+        self.canvas = tk.Canvas(self.overlay, highlightthickness=0)
+        self.canvas.pack(fill="both", expand=True)
+        self.canvas.create_image(0, 0, image=self.tk_img, anchor="nw")
+
+        # 5. Bind the left mouse click to our selection method
+        self.canvas.bind("<Button-1>", self.on_pixel_click)
+        
+        # Optional: Bind Escape key to cancel
+        self.overlay.bind("<Escape>", lambda e: self.close_overlay())
+
+    def on_pixel_click(self, event):
+        # 6. Get the exact x, y coordinates of the click
+        x, y = event.x, event.y
+        
+        # Grab the RGB color at those coordinates from our captured image
+        rgb_color = self.screen_img.getpixel((x, y))
+
+        # 7. Close the overlay and restore the main window
+        self.close_overlay()
+
+        # 8. Call your custom function with the selected color
+        self.open_swatch_popup(self._get_active_tab_id(), rgb_to_hex(*rgb_color))
+
+    def close_overlay(self):
+        self.overlay.destroy()
+        self.root.deiconify() # Bring the main window back
 
     '''
     TAB MANAGEMENT
