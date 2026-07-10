@@ -3,13 +3,15 @@ The main UI for colour clipboard using tkinter as the graphical layer.
 '''
 
 import json
+import mss
+import os
 
 import tkinter as tk
 from tkinter import ttk
 from tkinter import messagebox
 from tkinter import filedialog
 import _tkinter # For tkinter errors
-from PIL import ImageGrab, ImageTk
+from PIL import ImageGrab, ImageTk, Image, ImageCms
 
 import widgets as widgets
 import colours as cl
@@ -381,39 +383,85 @@ class ColourCoperUI:
         self.root.after(50, self.take_screenshot_and_show_overlay)
 
     def take_screenshot_and_show_overlay(self):
-        # 2. Capture the entire screen
-        self.screen_img = ImageGrab.grab()
+        # Capture the entire screen
+        # self.screen_img = ImageGrab.grab(scale_down=True)
 
-        # 3. Create a fullscreen, borderless overlay window
+        with mss.mss() as sct:
+            monitor = sct.monitors[1]
+            sct_img = sct.grab(monitor)
+            
+            # 1. Get the raw image as usual
+            raw_img = Image.frombytes("RGB", sct_img.size, sct_img.bgra, "raw", "BGRX")
+            
+            # 2. Define the path to the standard macOS Display P3 profile
+            p3_profile_path = "/System/Library/ColorSync/Profiles/Display P3.icc"
+            
+            # 3. Check if the profile exists (standard on modern Macs) and convert
+            if os.path.exists(p3_profile_path):
+                try:
+                    # Load the Mac's P3 profile and Pillow's built-in sRGB profile
+                    p3_profile = ImageCms.ImageCmsProfile(p3_profile_path)
+                    srgb_profile = ImageCms.createProfile("sRGB")
+                    
+                    # Build the conversion matrix
+                    transform = ImageCms.buildTransform(
+                        inputProfile=p3_profile, 
+                        outputProfile=srgb_profile, 
+                        inMode="RGB", 
+                        outMode="RGB"
+                    )
+                    
+                    # Apply the transformation to the screenshot
+                    self.screen_img = ImageCms.applyTransform(raw_img, transform)
+                    
+                except Exception as e:
+                    print(f"Color conversion failed: {e}")
+                    self.screen_img = raw_img
+            else:
+                print("P3 ICC profile not found, skipping conversion.")
+                self.screen_img = raw_img
+
+        # Create a fullscreen, borderless overlay window
         self.overlay = tk.Toplevel(self.root)
         self.overlay.attributes("-fullscreen", True)
         self.overlay.attributes("-topmost", True) # Keep it above all other apps
         self.overlay.config(cursor="crosshair")   # Change cursor to a crosshair
 
-        # 4. Display the screenshot on a Canvas
+        # Display the screenshot on a Canvas
         self.tk_img = ImageTk.PhotoImage(self.screen_img)
-        self.canvas = tk.Canvas(self.overlay, highlightthickness=0)
+
+        screen_width  = self.root.winfo_screenwidth()
+        screen_height = self.root.winfo_screenheight()
+        self.canvas = tk.Canvas(self.overlay, highlightthickness=0, width=screen_width, height=screen_height)
         self.canvas.pack(fill="both", expand=True)
         self.canvas.create_image(0, 0, image=self.tk_img, anchor="nw")
 
-        # 5. Bind the left mouse click to our selection method
+        # Bind the left mouse click to our selection method
         self.canvas.bind("<Button-1>", self.on_pixel_click)
         
-        # Optional: Bind Escape key to cancel
+        # Bind Escape key to cancel
         self.overlay.bind("<Escape>", lambda e: self.close_overlay())
 
     def on_pixel_click(self, event):
-        # 6. Get the exact x, y coordinates of the click
-        x, y = event.x, event.y
+        # Get the exact x, y coordinates of the click
+        # x, y = event.x, event.y
+
+        scale_factor = self.screen_img.width / self.root.winfo_screenwidth()
+    
+        # Scale the Tkinter event coordinates to match the mss physical pixels
+        actual_x = int(event.x * scale_factor)
+        actual_y = int(event.y * scale_factor)
         
         # Grab the RGB color at those coordinates from our captured image
-        rgb_color = self.screen_img.getpixel((x, y))
+        pixel_color = self.screen_img.getpixel((actual_x, actual_y))
+        r, g, b = pixel_color[:3]
+        print(pixel_color)
 
-        # 7. Close the overlay and restore the main window
+        # Close the overlay and restore the main window
         self.close_overlay()
 
-        # 8. Call your custom function with the selected color
-        self.open_swatch_popup(self._get_active_tab_id(), rgb_to_hex(*rgb_color))
+        # Call your custom function with the selected color
+        self.open_swatch_popup(self._get_active_tab_id(), rgb_to_hex(r,g,b))
 
     def close_overlay(self):
         self.overlay.destroy()
