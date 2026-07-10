@@ -593,7 +593,6 @@ class ColourCoperUI:
 
     # Re-lay-out swatches sequentially, keeping the "+" button at the end
     def _regrid_tab(self, tab_id):
-        tab = self.tabs[tab_id]
         swatches = [w for w in tab_id.winfo_children() if isinstance(w, widgets.Swatch)]
 
         # Get the width of the notebook tab frame in avoid swatches clipping out of view.
@@ -609,8 +608,10 @@ class ColourCoperUI:
         current_row_width = 0
 
         for swatch in swatches:
+            swatch.update_idletasks()
+
             # Get the swatch width and add it to the total row width
-            swatch_width = swatch.winfo_reqwidth() + (pad_x * 2)
+            swatch_width = swatch.winfo_reqwidth() + (pad_x * 4)
 
             # Compare the current row width with the notebook row to determine if this swatch should be on a new row
             if current_row_width + swatch_width > notebook_width and current_column > 0:
