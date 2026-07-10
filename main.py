@@ -684,41 +684,42 @@ class ColourCoperUI:
 
     # Load a previously saved JSON file into a new tab
     def load_project_tab(self, event=None):
-        filepath = filedialog.askopenfilename(
+        filepaths = filedialog.askopenfilenames(
             title="Load Project Tab",
             filetypes=[("JSON files", "*.json")],
         )
-        if not filepath:
+        if not filepaths:
             return
 
-        try:
-            with open(filepath, "r") as f:
-                data = json.load(f)
-        except (OSError, json.JSONDecodeError) as e:
-            messagebox.showerror("Load Failed", f"Could not load file:\n{e}")
-            return
-
-        name = data.get("name", "untitled project")
-        swatches = data.get("swatches", [])
-
-        # On first launch there's just one empty, untouched default tab -
-        # reuse it instead of leaving a redundant blank tab alongside.
-        if len(self.tabs) == 1:
-            (only_id,) = self.tabs.keys()
-            only_tab = self.tabs[only_id]
-            if not only_tab["dirty"] and only_tab["filepath"] is None and not self._get_tab_swatches_data(only_id):
-                self._remove_tab(only_id)
-
-        tab_id = self._create_tab(name)
-        for swatch in swatches:
+        for file in filepaths:
             try:
-                self._add_swatch_to_tab(tab_id, swatch.get("label", ""), swatch.get("hex", "#FFFFFF"), mark_dirty=False)
-            except ValueError:
-                continue  # skip any malformed swatch entries
+                with open(file, "r") as f:
+                    data = json.load(f)
+            except (OSError, json.JSONDecodeError) as e:
+                messagebox.showerror("Load Failed", f"Could not load file:\n{e}")
+                return
 
-        self.tabs[tab_id]["filepath"] = filepath
-        self.tabs[tab_id]["dirty"] = False
-        self._update_tab_label(tab_id)
+            name = data.get("name", "untitled project")
+            swatches = data.get("swatches", [])
+
+            # On first launch there's just one empty, untouched default tab -
+            # reuse it instead of leaving a redundant blank tab alongside.
+            if len(self.tabs) == 1:
+                (only_id,) = self.tabs.keys()
+                only_tab = self.tabs[only_id]
+                if not only_tab["dirty"] and only_tab["filepath"] is None and not self._get_tab_swatches_data(only_id):
+                    self._remove_tab(only_id)
+
+            tab_id = self._create_tab(name)
+            for swatch in swatches:
+                try:
+                    self._add_swatch_to_tab(tab_id, swatch.get("label", ""), swatch.get("hex", "#FFFFFF"), mark_dirty=False)
+                except ValueError:
+                    continue  # skip any malformed swatch entries
+
+            self.tabs[tab_id]["filepath"] = file
+            self.tabs[tab_id]["dirty"] = False
+            self._update_tab_label(tab_id)
 
     '''
     HELP BUTTON POPUP
