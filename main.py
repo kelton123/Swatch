@@ -111,7 +111,7 @@ class ColourCoperUI:
         self.save_button.grid(row = 0, column = 8)
 
         # Load swatches palette button aligned to the right of the window.
-        self.load_button = tk.Button(self.header_frame, highlightbackground = cl.CC_WHITE, text = "load", command = self.load_project_tab)
+        self.load_button = tk.Button(self.header_frame, highlightbackground = cl.CC_WHITE, text = "import", command = self.load_project_tab)
         self.load_button.grid(row = 0, column = 9)
 
         # Delete swatches palette button aligned to the right of the window.
