@@ -33,7 +33,7 @@ class ColourCoperUI:
         self.root = root
         self.root.title("Swatch")
         self.root.geometry("960x540")
-        self.root.minsize(854,480)
+        self.root.minsize(720,405)
         self.root.config(background = cl.CC_WHITE)
         self.root.resizable(False, False)
 
@@ -477,13 +477,17 @@ class ColourCoperUI:
 
     # Open a popup to confirm if the user wants to delete a project tab.
     def _open_delete_tab_popup(self, event=None):
+        if len(self.notebook.children) == 0:
+            messagebox.showwarning("Warning", "No project tabs to delete!", parent=self.root)
+            return
+
         # Create the top-level pop-up window
         popup = tk.Toplevel(self.root, bg=cl.CC_WHITE)
         popup.title("Delete Project Tab")
         popup.resizable(False, False)
 
         # Launch the popup in the centre of the root window.
-        self.centre_launch_popup(popup, 300, 130)
+        widgets.centre_launch_popup(self.root, popup, 300, 130)
         
         # Make the popup modal (blocks interaction with main window)
         popup.transient(self.root)   # Keeps popup on top of main window [2]
@@ -709,7 +713,7 @@ class ColourCoperUI:
         popup.resizable(False, False)
 
         # Launch the popup in the centre of the root window.
-        self.centre_launch_popup(popup, 400, 260)
+        widgets.centre_launch_popup(self.root ,popup, 400, 260)
         
         # Make the popup modal (blocks interaction with main window)
         popup.transient(self.root)   # Keeps popup on top of main window [2]

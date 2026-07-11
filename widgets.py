@@ -4,9 +4,11 @@ from tkinter import PhotoImage, messagebox
 import colours as cl
 
 def centre_launch_popup(root_window, popup_window, window_width, window_height):
-        # Get the current position and size of the root window
+        # Get the current position of the window
         root_x = root_window.winfo_x()
         root_y = root_window.winfo_y()
+
+        # Get the current window width and height
         root_width = root_window.winfo_width()
         root_height = root_window.winfo_height()
         
