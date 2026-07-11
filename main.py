@@ -8,9 +8,9 @@ import os
 
 import tkinter as tk
 from tkinter import ttk
-from tkinter import messagebox
-from tkinter import filedialog
+from tkinter import messagebox, filedialog
 import _tkinter # For tkinter errors
+
 from PIL import ImageGrab, ImageTk, Image, ImageCms
 
 import widgets as widgets
@@ -27,7 +27,6 @@ def clamp(x):
 
 def rgb_to_hex(r,g,b,a=None):
     return "{0:02x}{1:02x}{2:02x}".format(clamp(r), clamp(g), clamp(b))
-        
 
 class ColourCoperUI:
     def __init__(self, root):
@@ -183,20 +182,6 @@ class ColourCoperUI:
         # set the position of the window to the center of the screen
         window.geometry(f'{window_width}x{window_height}+{center_x}+{center_y}')
 
-    def centre_launch_popup(self, window, window_width, window_height):
-        # Get the current position and size of the root window
-        root_x = self.root.winfo_x()
-        root_y = self.root.winfo_y()
-        root_width = self.root.winfo_width()
-        root_height = self.root.winfo_height()
-        
-        # Calculate the exact offsets to center the popup
-        x_coord = int(root_x + (root_width - window_width) / 2)
-        y_coord = int(root_y + (root_height - window_height) / 2)
-        
-        # Apply the geometry string (coordinates must be integers)
-        window.geometry(f"{window_width}x{window_height}+{x_coord}+{y_coord}")
-
     # Get the centre coordinates of the user's screen
     def get_screen_centre(self):
         # get the screen dimension
@@ -240,18 +225,9 @@ class ColourCoperUI:
 
     # Create a new swatch inside the given tab
     def open_swatch_popup(self, tab_id, hex=None):
-        # 1. Create the top-level pop-up window
-        popup = tk.Toplevel(self.root)
-        popup.title("Add Swatch")
-        popup.resizable(False, False)
+        # Create the top-level pop-up window        
+        popup = widgets.create_popup(self.root, "Add Swatch")
 
-        # Launch the popup in the centre of the root window.
-        self.centre_launch_popup(popup, 260, 150)
-        
-        # Make the popup modal (blocks interaction with main window)
-        popup.transient(self.root)   # Keeps popup on top of main window [2]
-        popup.grab_set()             # Directs all events to this window [1, 3]
-        
         # Configure layout spacing for the popup
         popup.columnconfigure(1, weight=1)
         popup.config(padx=15, pady=15)
@@ -338,7 +314,7 @@ class ColourCoperUI:
         popup.resizable(False, False)
 
         # Open the popup in the centre of the root window.
-        self.centre_launch_popup(popup, 300, 130)
+        widgets.centre_launch_popup(self.root, popup, 300, 130)
 
         lbl_name = tk.Label(popup, text="Project Name:")
         lbl_name.grid(row=0, column=0, sticky="w", pady=5)
@@ -581,6 +557,7 @@ class ColourCoperUI:
     def _add_swatch_to_tab(self, tab_id, label_text, hex_code, mark_dirty=True):
         widgets.Swatch(
             tab_id,
+            app_root= self.root,
             label_text=label_text,
             hex_code=hex_code,
             on_delete=lambda: self._on_swatch_removed(tab_id),

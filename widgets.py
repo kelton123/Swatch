@@ -1,7 +1,40 @@
 import tkinter as tk
-from tkinter import PhotoImage
+from tkinter import PhotoImage, messagebox
 
 import colours as cl
+
+def centre_launch_popup(root_window, popup_window, window_width, window_height):
+        # Get the current position and size of the root window
+        root_x = root_window.winfo_x()
+        root_y = root_window.winfo_y()
+        root_width = root_window.winfo_width()
+        root_height = root_window.winfo_height()
+        
+        # Calculate the exact offsets to center the popup
+        x_coord = int(root_x + (root_width - window_width) / 2)
+        y_coord = int(root_y + (root_height - window_height) / 2)
+        
+        # Apply the geometry string (coordinates must be integers)
+        popup_window.geometry(f"{window_width}x{window_height}+{x_coord}+{y_coord}")
+
+def create_popup(parent_widget, title="", width=260, height=150):
+    '''
+    Create a popup above the main window in the center.
+    '''
+    main_window = parent_widget.winfo_toplevel()
+
+    popup = tk.Toplevel(main_window)
+    popup.title(title)
+    popup.resizable(False, False)
+
+    # Launch the popup in the centre of the root window.
+    centre_launch_popup(main_window, popup, width, height)
+    
+    # Make the popup modal (blocks interaction with main window)
+    popup.transient(parent_widget)   
+    popup.grab_set()
+
+    return popup
 
 # BUTTONS
 class ButtonTab(tk.Button):
@@ -130,7 +163,7 @@ class LabelFooter(tk.Label):
 
 
 class Swatch(tk.Frame):
-    def __init__(self, parent, label_text, hex_code, on_delete=None, active_format="hex", **kwargs):
+    def __init__(self, parent, app_root, label_text, hex_code, on_delete=None, active_format="hex", **kwargs):
         defaults = {
             "bg": hex_code,
             "height": 20,
@@ -139,6 +172,8 @@ class Swatch(tk.Frame):
 
         defaults.update(kwargs)
         super().__init__(parent, **defaults)
+
+        self.root_window = app_root
 
         # Optional callback fired after this swatch has been deleted, so the
         # owning tab can reflow its layout and mark itself as unsaved.
@@ -250,8 +285,8 @@ class Swatch(tk.Frame):
             font_size = 14
             pad_y = (13,20)
 
-        lbl_title = tk.Label(self, text=self.label_text, font=("Arial", font_size, "bold"), **lbl_opts)
-        lbl_title.grid(row=0, column=0, sticky="w", padx=(10, 0), pady=pad_y)
+        self.swatch_name = tk.Label(self, text=self.label_text, font=("Arial", font_size, "bold"), **lbl_opts)
+        self.swatch_name.grid(row=0, column=0, sticky="w", padx=(10, 0), pady=pad_y)
 
         # Delete button
         delete_button = tk.Label(self, text = "✕", font = ("Arial", 14), **lbl_opts)
@@ -264,6 +299,7 @@ class Swatch(tk.Frame):
         self.colour_code_value = tk.Label(self, text = f"{active_colour_code}", font=("Arial", 14), **lbl_opts)
         self.colour_code_value.grid(row = 1, column = 0, sticky = "w", padx = (10, 0), pady = (2,10))
 
+        # Copy Icon
         icon_copy_light = PhotoImage(file="Light_copy_icon.png")
         icon_copy_dark  = PhotoImage(file="Dark_copy_icon.png")
         icon_copy = icon_copy_light if brightness < 125 else icon_copy_dark
@@ -279,6 +315,7 @@ class Swatch(tk.Frame):
         self.colour_code_value.bind("<Button-1>", lambda e: copy_to_clipboard(self.colour_code_value))
         self.bind("<Button-1>", lambda event: copy_to_clipboard(self.colour_code_value))
         icon_copy_label.bind("<Button-1>", lambda event: copy_to_clipboard(self.colour_code_value))
+        self.swatch_name.bind("<Button-1>", lambda event: self.update_swatch_name())
     
         def copy_to_clipboard(widget):
             """
@@ -328,6 +365,50 @@ class Swatch(tk.Frame):
                 self.active_format = "hsl"
             case _:
                 self.colour_code_value.config(text=self.hex_code)
+
+    def update_swatch_name(self):
+        '''
+        When the user clicks on the name label, open a popup where the
+        user can type a new name for the swatch.
+        '''
+        popup = create_popup(self.root_window, "Update Name", 300, 130)
+
+        # Create a label for what the user has to input.
+        lbl_name = tk.Label(popup, text="Name:")
+        lbl_name.grid(row=0, column=0, sticky="w", pady=10, padx=10)
+
+        # Create an entry widget 
+        ent_name = tk.Entry(popup)
+        ent_name.grid(row=0, column=1, sticky="ew", padx=(10, 0), pady=5)
+        ent_name.focus_set()
+
+        # If the user confirms try and update the swatch label
+        def update_name(event=None):
+            name = ent_name.get().strip()
+            if not name:
+                messagebox.showwarning("Warning", "Please enter a project name!", parent=popup)
+                return
+            
+            self.swatch_name.config(text=name)
+            popup.destroy()
+        
+        def close_popup(self):
+            popup.destroy()
+
+        # Create confirm and quit buttons
+        btn_frame = tk.Frame(popup)
+        btn_frame.grid(row=1, column=0, columnspan=2, sticky="ew", pady=(10, 0))
+        btn_frame.columnconfigure(0, weight=1)
+
+        btn_close = tk.Button(btn_frame, text="Cancel", command=popup.destroy)
+        btn_close.grid(row=0, column=1, padx=5, pady=0)
+
+        btn_create = tk.Button(btn_frame, text="Update", command=update_name)
+        btn_create.grid(row=0, column=2, padx=5, pady=0)
+
+        # Bind keyboard inputs
+        popup.bind("<Escape>", close_popup)
+        popup.bind("<Return>", update_name)
 
     def _get_active_colour_code(self):
         match self.active_format:
