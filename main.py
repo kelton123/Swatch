@@ -481,17 +481,7 @@ class ColourCoperUI:
             messagebox.showwarning("Warning", "No project tabs to delete!", parent=self.root)
             return
 
-        # Create the top-level pop-up window
-        popup = tk.Toplevel(self.root, bg=cl.CC_WHITE)
-        popup.title("Delete Project Tab")
-        popup.resizable(False, False)
-
-        # Launch the popup in the centre of the root window.
-        widgets.centre_launch_popup(self.root, popup, 300, 130)
-        
-        # Make the popup modal (blocks interaction with main window)
-        popup.transient(self.root)   # Keeps popup on top of main window [2]
-        popup.grab_set()             # Directs all events to this window [1, 3]
+        popup = widgets.create_popup(self.root, "Delete Project Tab", 300, 130)
 
         confirmation_message = tk.Message(popup, text=f"Are you sure you want to delete the current project tab?\nAll unsave swatches will be lost.", font=("Arial", 14), bg=cl.CC_WHITE, fg=cl.CC_BLACK, width=280)
         confirmation_message.grid(row=0, column=0, sticky="w", pady=5, padx=10)
@@ -499,7 +489,6 @@ class ColourCoperUI:
         btn_frame = tk.Frame(popup, bg=cl.CC_WHITE)
         btn_frame.grid(row=1, column=0, columnspan=2, sticky="ew", pady=(20, 10), padx=10)
         btn_frame.columnconfigure(1, weight=1)
-
 
         def confirm(event=None):
             try:
@@ -510,7 +499,7 @@ class ColourCoperUI:
             
             popup.destroy()
 
-        def destroy_popup(self, event=None):
+        def destroy_popup(self=None, event=None):
             popup.destroy()
 
         btn_close = tk.Button(btn_frame, text="Cancel", highlightbackground=cl.CC_WHITE, command=destroy_popup)
