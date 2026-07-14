@@ -85,6 +85,7 @@ class ColourCoperUI:
         self.tint_entry = tk.Entry(self.header_frame, width=5,highlightbackground=cl.CC_WHITE)
         self.tint_entry.insert(0, "100%")  # Pre-fill with hashtag as a helper
         self.tint_entry.grid(row=0, column=2)
+        self.tint_entry.bind("<FocusOut>", self.update_swatch_tint)
 
         # Colour code format dropdown
         # Dropdown options  
@@ -171,10 +172,15 @@ class ColourCoperUI:
         self.root.bind("<Command-p>", self.add_new_project_tab)
         self.root.bind("<Command-P>", self.add_new_project_tab)
 
+        self.tint_entry.bind("<Return>", self._focus_main_window)
+
 
     '''
     UI FUNCTIONS
     '''
+    def _focus_main_window(self, event=None):
+        self.root.focus()
+
     # Launch the window in the centre of the screen.
     def centre_launch(self, window, window_width=960, window_height=540):
         center_x, center_y = self.get_screen_centre()
@@ -348,6 +354,30 @@ class ColourCoperUI:
         # Bind keyboard inputs
         popup.bind("<Escape>", close_popup)
         popup.bind("<Return>", create_action)
+
+    # TINT FUNCTION
+    def update_swatch_tint(self, event=None):
+        tint_value = self.tint_entry.get().replace("%", "").strip()     
+
+        if tint_value is None:
+            return
+        
+        try:
+            tint_value = int(tint_value)
+            if tint_value > 100 or tint_value < -100:
+                raise ValueError
+            
+        except ValueError:
+            messagebox.showwarning("Warning", "Please enter a valid value -100 to 100", parent=self.root)
+            return
+
+        self.tint_entry.delete(0, "end")
+        self.tint_entry.insert(0, f"{tint_value}%")
+
+        swatches = self.get_active_tab_swatches()
+        if swatches:
+            for swatch in swatches:
+                swatch.update_colour_tint(int(tint_value))
 
     # EYEDROPPER FUNCTIONS
     def start_eyedropper(self):
@@ -608,6 +638,15 @@ class ColourCoperUI:
     # Get the active colour format from the drop down list
     def _get_active_format(self):
         return self.format_combobox.get()
+    
+    def get_active_tab_swatches(self):
+        active_tab_id = self._get_active_tab_id()
+        if active_tab_id is None:
+            return None
+
+        swatches = [w for w in active_tab_id.winfo_children() if isinstance(w, widgets.Swatch)]
+
+        return swatches
 
     '''
     SAVE / LOAD

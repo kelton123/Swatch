@@ -264,6 +264,41 @@ class Swatch(tk.Frame):
         l_pct = round(l * 100)
         
         return h_deg, s_pct, l_pct
+    
+    def update_colour_tint(self, tint_percentage=100):
+        '''
+        Pass in a multiplier which is applied to the hex code to make it more white. 
+        Similar to making a colour more transparent but keeping it opaque.
+        100 = Original Color, 0 = Pure White (or Black if negative).
+        '''
+        r,g,b = self.rgb_code
+
+        # 100% means keep the original colour value.
+        tint_factor = (100 - abs(tint_percentage)) / 100.0
+
+        if tint_percentage > 0:
+            # Tint: Move the current RGB values closer to 255 (White)
+            r = int(r + ((255 - r) * tint_factor))
+            g = int(g + ((255 - g) * tint_factor))
+            b = int(b + ((255 - b) * tint_factor))
+        elif tint_percentage < 0:
+            # Shade: Move the current RGB values closer to 0 (Black)
+            r = int(r * (1 - tint_factor))
+            g = int(g * (1 - tint_factor))
+            b = int(b * (1 - tint_factor))
+            
+        # 4. Clamp the values to ensure they stay strictly within the 0-255 range
+        r = max(0, min(255, r))
+        g = max(0, min(255, g))
+        b = max(0, min(255, b))
+
+        new_hex_code = f"#{r:02x}{g:02x}{b:02x}"
+        self.colour_code_value.config(text= new_hex_code)
+        self.config(bg= new_hex_code)
+        self.swatch_name.config(bg=new_hex_code)
+        self.delete_button.config(bg=new_hex_code)
+        self.icon_copy_label.config(bg=new_hex_code)
+        self.colour_code_value.config(bg=new_hex_code)
 
     
     def _create_widgets(self):
@@ -291,9 +326,9 @@ class Swatch(tk.Frame):
         self.swatch_name.grid(row=0, column=0, sticky="w", padx=(10, 0), pady=pad_y)
 
         # Delete button
-        delete_button = tk.Label(self, text = "✕", font = ("Arial", 14), **lbl_opts)
-        delete_button.bind("<Button-1>", lambda event: self.close_swatch())
-        delete_button.grid(row = 0, column = 2, sticky = "e", padx = (0, 10), pady = (10, 15))
+        self.delete_button = tk.Label(self, text = "✕", font = ("Arial", 14), **lbl_opts)
+        self.delete_button.bind("<Button-1>", lambda event: self.close_swatch())
+        self.delete_button.grid(row = 0, column = 2, sticky = "e", padx = (0, 10), pady = (10, 15))
         
         # Colour Code Label
         active_colour_code = self._get_active_colour_code()
@@ -306,9 +341,9 @@ class Swatch(tk.Frame):
         icon_copy_dark  = PhotoImage(file="Dark_copy_icon.png")
         icon_copy = icon_copy_light if brightness < 125 else icon_copy_dark
 
-        icon_copy_label = tk.Label(self, image=icon_copy, **lbl_opts)
-        icon_copy_label.image = icon_copy 
-        icon_copy_label.grid(row=1, column=2, sticky="e", padx = (0, 10), pady = (2,10))
+        self.icon_copy_label = tk.Label(self, image=icon_copy, **lbl_opts)
+        self.icon_copy_label.image = icon_copy 
+        self.icon_copy_label.grid(row=1, column=2, sticky="e", padx = (0, 10), pady = (2,10))
 
 
         self.colour_code_value.config(cursor="hand2")
@@ -316,7 +351,7 @@ class Swatch(tk.Frame):
         # Bind keyboard inputs
         self.colour_code_value.bind("<Button-1>", lambda e: copy_to_clipboard(self.colour_code_value))
         self.bind("<Button-1>", lambda event: copy_to_clipboard(self.colour_code_value))
-        icon_copy_label.bind("<Button-1>", lambda event: copy_to_clipboard(self.colour_code_value))
+        self.icon_copy_label.bind("<Button-1>", lambda event: copy_to_clipboard(self.colour_code_value))
         self.swatch_name.bind("<Button-1>", lambda event: self.update_swatch_name())
     
         def copy_to_clipboard(widget):
