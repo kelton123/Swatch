@@ -37,6 +37,8 @@ class ColourCoperUI:
         self.root.config(background = cl.CC_WHITE)
         self.root.resizable(False, False)
 
+        self.root.bind('<<NotebookTabChanged>>', lambda event: self.root.update_idletasks())
+
         self.centre_launch(self.root)
 
         # Tracks every open project tab, keyed by its content frame (the
@@ -113,7 +115,7 @@ class ColourCoperUI:
         self.save_button.grid(row = 0, column = 8)
 
         # Load swatches palette button aligned to the right of the window.
-        self.load_button = tk.Button(self.header_frame, highlightbackground = cl.CC_WHITE, text = "import", command = self.load_project_tab)
+        self.load_button = tk.Button(self.header_frame, highlightbackground = cl.CC_WHITE, text = "open", command = self.load_project_tab)
         self.load_button.grid(row = 0, column = 9)
 
         # Delete swatches palette button aligned to the right of the window.
@@ -157,8 +159,8 @@ class ColourCoperUI:
         self.root.bind("<Command-D>", self._open_delete_tab_popup)
 
         # Load a swatch file
-        self.root.bind("<Command-l>", self.load_project_tab)
-        self.root.bind("<Command-L>", self.load_project_tab)
+        self.root.bind("<Command-o>", self.load_project_tab)
+        self.root.bind("<Command-O>", self.load_project_tab)
 
         # Add a new swatch
         self.root.bind("<Command-n>", self.add_new_swatch)
@@ -577,7 +579,7 @@ class ColourCoperUI:
                 swatch.active_format = format_value
 
     # Add a swatch into the active tab
-    def _add_swatch_to_tab(self, tab_id, label_text, hex_code, mark_dirty=True):
+    def _add_swatch_to_tab(self, tab_id, label_text, hex_code, mark_dirty=True, update_grid=True):
         widgets.Swatch(
             tab_id,
             app_root= self.root,
@@ -587,13 +589,17 @@ class ColourCoperUI:
             active_format=self._get_active_format()
         )  # raises ValueError for an invalid hex code
 
-        self._regrid_tab(tab_id)
+        if update_grid:
+            self._regrid_tab(tab_id)
+
         if mark_dirty:
             self._mark_dirty(tab_id)
 
     # Re-lay-out swatches sequentially, keeping the "+" button at the end
     def _regrid_tab(self, tab_id):
         swatches = [w for w in tab_id.winfo_children() if isinstance(w, widgets.Swatch)]
+
+        tab_id.update_idletasks()
 
         # Get the width of the notebook tab frame in avoid swatches clipping out of view.
         notebook_width = self.notebook.winfo_width()
@@ -608,7 +614,8 @@ class ColourCoperUI:
         current_row_width = 0
 
         for swatch in swatches:
-            swatch.update_idletasks()
+            # TODO: review an alternative method, without calling this the swatches can clip
+            # swatch.update_idletasks()
 
             # Get the swatch width and add it to the total row width
             swatch_width = swatch.winfo_reqwidth() + (pad_x * 4)
@@ -620,7 +627,7 @@ class ColourCoperUI:
                 current_row_width = 0
 
             # Add the swatch to the correct row and column location
-            swatch.grid(row=current_row, column=current_column, padx=pad_x, pady=pad_y)
+            swatch.grid(row=current_row, column=current_column, padx=pad_x, pady=pad_y, sticky="w")
 
             # Update variables for the next iteration
             current_row_width += swatch_width
@@ -723,9 +730,12 @@ class ColourCoperUI:
             tab_id = self._create_tab(name)
             for swatch in swatches:
                 try:
-                    self._add_swatch_to_tab(tab_id, swatch.get("label", ""), swatch.get("hex", "#FFFFFF"), mark_dirty=False)
+                    self._add_swatch_to_tab(tab_id, swatch.get("label", ""), swatch.get("hex", "#FFFFFF"), mark_dirty=False, update_grid=False)
                 except ValueError:
                     continue  # skip any malformed swatch entries
+            
+            # Update the tab's swatch grid
+            self._regrid_tab(tab_id)
 
             self.tabs[tab_id]["filepath"] = file
             self.tabs[tab_id]["dirty"] = False
@@ -760,7 +770,7 @@ class ColourCoperUI:
         keyboard_shortcuts_heading.pack(anchor="nw", padx=20, pady=0, expand=True)
 
         keyboard_shortcuts = ("• Save: ⌘ + s\n"
-                             "• Load: ⌘ + l\n"
+                             "• Load: ⌘ + o\n"
                              "• New project tab: ⌘ + p\n"
                              "• New swatch: ⌘ + n\n"
                              "• Cycle colour formats: ⌘ + f\n")

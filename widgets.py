@@ -191,6 +191,9 @@ class Swatch(tk.Frame):
         self.formats = ["hex", "rgb", "cmyk", "hsl", "css"]
         self.active_format = active_format
 
+        self.icon_copy_light = PhotoImage(file="Light_copy_icon.png")
+        self.icon_copy_dark  = PhotoImage(file="Dark_copy_icon.png")
+
         # Create the card UI widgets.
         self._create_widgets()
 
@@ -337,9 +340,7 @@ class Swatch(tk.Frame):
         self.colour_code_value.grid(row = 1, column = 0, sticky = "w", padx = (10, 0), pady = (2,10))
 
         # Copy Icon
-        icon_copy_light = PhotoImage(file="Light_copy_icon.png")
-        icon_copy_dark  = PhotoImage(file="Dark_copy_icon.png")
-        icon_copy = icon_copy_light if brightness < 125 else icon_copy_dark
+        icon_copy = self.icon_copy_light if brightness < 125 else self.icon_copy_dark
 
         self.icon_copy_label = tk.Label(self, image=icon_copy, **lbl_opts)
         self.icon_copy_label.image = icon_copy 
