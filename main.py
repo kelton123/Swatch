@@ -614,9 +614,6 @@ class ColourCoperUI:
         current_row_width = 0
 
         for swatch in swatches:
-            # TODO: review an alternative method, without calling this the swatches can clip
-            # swatch.update_idletasks()
-
             # Get the swatch width and add it to the total row width
             swatch_width = swatch.winfo_reqwidth() + (pad_x * 4)
 
