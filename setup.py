@@ -16,7 +16,7 @@ DATA_FILES = [
     'Dark_cross_icon.png']
 
 OPTIONS = {
-    'packages': ['tkinter', 'json', 'pillow']}
+    'packages': ['tkinter', 'json', 'PIL']}
 
 setup(
     app=APP,
