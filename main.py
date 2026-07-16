@@ -366,15 +366,20 @@ class ColourCoperUI:
         
         try:
             tint_value = int(tint_value)
-            if tint_value > 100 or tint_value < -100:
+            if tint_value > 100 or tint_value < -95:
                 raise ValueError
             
         except ValueError:
-            messagebox.showwarning("Warning", "Please enter a valid value -100 to 100", parent=self.root)
+            messagebox.showwarning("Warning", "Please enter a valid value between -95 to 95", parent=self.root)
             return
 
         self.tint_entry.delete(0, "end")
-        self.tint_entry.insert(0, f"{tint_value}%")
+        if tint_value == 0:
+            # Setting to 0 will be pure white, reset to the original colour
+            self.tint_entry.insert(0, "100%")
+            tint_value = 100
+        else:
+            self.tint_entry.insert(0, f"{tint_value}%")
 
         swatches = self.get_active_tab_swatches()
         if swatches:

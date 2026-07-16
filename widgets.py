@@ -284,11 +284,12 @@ class Swatch(tk.Frame):
             r = int(r + ((255 - r) * tint_factor))
             g = int(g + ((255 - g) * tint_factor))
             b = int(b + ((255 - b) * tint_factor))
+
         elif tint_percentage < 0:
             # Shade: Move the current RGB values closer to 0 (Black)
-            r = int(r * (1 - tint_factor))
-            g = int(g * (1 - tint_factor))
-            b = int(b * (1 - tint_factor))
+            r = int(r * tint_factor)
+            g = int(g * tint_factor)
+            b = int(b * tint_factor)
             
         # 4. Clamp the values to ensure they stay strictly within the 0-255 range
         r = max(0, min(255, r))
@@ -296,7 +297,9 @@ class Swatch(tk.Frame):
         b = max(0, min(255, b))
 
         new_hex_code = f"#{r:02x}{g:02x}{b:02x}"
-        self.colour_code_value.config(text= new_hex_code)
+        self.colour_code_value.config(text= self.convert_hex_code(new_hex_code, self.active_format))
+
+        # Update widget backgrounds to the new colour
         self.config(bg= new_hex_code)
         self.swatch_name.config(bg=new_hex_code)
         self.delete_button.config(bg=new_hex_code)
@@ -460,6 +463,19 @@ class Swatch(tk.Frame):
                 return self.hsl_code
             case _:
                 return self.hex_code
+            
+    def convert_hex_code(self, hex_code, new_format):
+        match new_format:
+            case "hex":
+                return hex_code
+            case "rgb":
+                return self._hex_to_rgb(hex_code)
+            case "cmyk":
+                return self._rgb_to_cmyk(*self._hex_to_rgb(hex_code))
+            case "hsl":
+                return self._hex_to_hsl(hex_code)
+            case _:
+                return hex_code
 
     def close_swatch(self):
         self.destroy()
