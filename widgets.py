@@ -165,7 +165,7 @@ class LabelFooter(tk.Label):
 
 
 class Swatch(tk.Frame):
-    def __init__(self, parent, app_root, label_text, hex_code, on_delete=None, active_format="hex", **kwargs):
+    def __init__(self, parent, app_root, label_text, hex_code, on_delete=None, on_reorder=None, active_format="hex", **kwargs):
         defaults = {
             "bg": hex_code,
             "height": 20,
@@ -180,6 +180,7 @@ class Swatch(tk.Frame):
         # Optional callback fired after this swatch has been deleted, so the
         # owning tab can reflow its layout and mark itself as unsaved.
         self.on_delete = on_delete
+        self.on_reorder = on_reorder
 
         # Create the colour variables.
         self.label_text = label_text
@@ -342,17 +343,23 @@ class Swatch(tk.Frame):
         active_colour_code = self._get_active_colour_code()
 
         self.colour_code_value = tk.Label(self, text = f"{active_colour_code}", font=("Arial", 14), **lbl_opts)
-        self.colour_code_value.grid(row = 1, column = 0, sticky = "w", padx = (10, 0), pady = (2,10))
+        self.colour_code_value.grid(row = 1, column = 0, sticky = "w", padx = (10, 0), pady = (2,2))
 
         # Copy Icon
         icon_copy = self.select_by_brightness(self.icon_copy_light, self.icon_copy_dark, brightness)
 
         self.icon_copy_label = tk.Label(self, image=icon_copy, **lbl_opts)
         self.icon_copy_label.image = icon_copy 
-        self.icon_copy_label.grid(row=1, column=2, sticky="e", padx = (0, 10), pady = (2,10))
+        self.icon_copy_label.grid(row=1, column=2, sticky="e", padx = (0, 10), pady = (2,2))
 
+        # Swatch position management widgets
+        left_button = tk.Label(self, text = "←", font=("Arial", 14), **lbl_opts)
+        left_button.grid(row=2, column=0, sticky="w", padx = (10, 0), pady = (2,10))
+        left_button.bind("<Button-1>", lambda event: self.move_left())
 
-        self.colour_code_value.config(cursor="hand2")
+        right_button = tk.Label(self, text="→", font=("Arial", 14), **lbl_opts)
+        right_button.grid(row=2, column=2, sticky="e", padx = (0, 10), pady = (2,10))
+        right_button.bind("<Button-1>", lambda event: self.move_right())
 
         # Bind keyboard inputs
         self.colour_code_value.bind("<Button-1>", lambda e: copy_to_clipboard(self.colour_code_value))
@@ -391,6 +398,42 @@ class Swatch(tk.Frame):
             original_text = widget.cget("text")
             widget.config(text="Copied!")
             widget.after(700, lambda: widget.config(text=original_text))
+
+    def move_left(self):
+        """Swaps this swatch with the one to its left in stacking order."""
+        parent_tab = self.master
+        # Get all sibling swatches inside the active tab frame
+        swatches = [w for w in parent_tab.winfo_children() if isinstance(w, Swatch)]
+        
+        try:
+            idx = swatches.index(self)
+        except ValueError:
+            return
+            
+        if idx > 0:
+            # lower(widget) places this widget BELOW its left sibling in the stacking order,
+            # which moves it leftwards (earlier) in the winfo_children() list.
+            self.lower(swatches[idx - 1])
+            if self.on_reorder:
+                self.on_reorder()
+
+    def move_right(self):
+        """Swaps this swatch with the one to its right in stacking order."""
+        parent_tab = self.master
+        # Get all sibling swatches inside the active tab frame
+        swatches = [w for w in parent_tab.winfo_children() if isinstance(w, Swatch)]
+        
+        try:
+            idx = swatches.index(self)
+        except ValueError:
+            return
+            
+        if idx < len(swatches) - 1:
+            # tkraise(widget) places this widget ABOVE its right sibling in the stacking order,
+            # which moves it rightwards (later) in the winfo_children() list.
+            self.tkraise(swatches[idx + 1])
+            if self.on_reorder:
+                self.on_reorder()
 
     def update_colour_code_label(self, code_type):
         match code_type:

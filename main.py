@@ -588,11 +588,12 @@ class ColourCoperUI:
     def _add_swatch_to_tab(self, tab_id, label_text, hex_code, mark_dirty=True, update_grid=True):
         widgets.Swatch(
             tab_id,
-            app_root= self.root,
-            label_text=label_text,
-            hex_code=hex_code,
-            on_delete=lambda: self._on_swatch_removed(tab_id),
-            active_format=self._get_active_format()
+            app_root      = self.root,
+            label_text    = label_text,
+            hex_code      = hex_code,
+            on_delete     = lambda: self._on_swatch_removed(tab_id),
+            on_reorder    = lambda: self._on_swatch_reordered(tab_id),
+            active_format = self._get_active_format()
         )  # raises ValueError for an invalid hex code
 
         if update_grid:
@@ -600,6 +601,10 @@ class ColourCoperUI:
 
         if mark_dirty:
             self._mark_dirty(tab_id)
+
+    def _on_swatch_reordered(self, tab_id):
+        self._regrid_tab(tab_id)
+        self._mark_dirty(tab_id)
 
     # Re-lay-out swatches sequentially, keeping the "+" button at the end
     def _regrid_tab(self, tab_id):
