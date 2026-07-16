@@ -681,9 +681,12 @@ class ColourCoperUI:
         if not filepath:
             filepath = filedialog.asksaveasfilename(
                 title="Save Project Tab",
-                defaultextension=".json",
-                filetypes=[("JSON files", "*.json")],
-                initialfile=f"{tab['name']}.json",
+                defaultextension=".swa", # custom extension but with the structure of json inside
+                filetypes=[
+                    ("Swatch", "*.swa"),
+                    ("JSON", "*.json")
+                    ],
+                initialfile=f"{tab['name']}.swa",
             )
             if not filepath:
                 return  # user cancelled
@@ -711,7 +714,10 @@ class ColourCoperUI:
     def load_project_tab(self, event=None):
         filepaths = filedialog.askopenfilenames(
             title="Load Project Tab",
-            filetypes=[("JSON files", "*.json")],
+            filetypes=[
+                ("Swatch", "*.swa"),
+                ("JSON", "*.json")
+                ],
         )
         if not filepaths:
             return
