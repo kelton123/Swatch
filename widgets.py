@@ -355,17 +355,22 @@ class Swatch(tk.Frame):
         # Swatch position management widgets
         left_button = tk.Label(self, text = "←", font=("Arial", 14), **lbl_opts)
         left_button.grid(row=2, column=0, sticky="w", padx = (10, 0), pady = (2,10))
-        left_button.bind("<Button-1>", lambda event: self.move_left())
+        
 
         right_button = tk.Label(self, text="→", font=("Arial", 14), **lbl_opts)
         right_button.grid(row=2, column=2, sticky="e", padx = (0, 10), pady = (2,10))
-        right_button.bind("<Button-1>", lambda event: self.move_right())
+        
 
-        # Bind keyboard inputs
-        self.colour_code_value.bind("<Button-1>", lambda e: copy_to_clipboard(self.colour_code_value))
-        self.bind("<Button-1>", lambda event: copy_to_clipboard(self.colour_code_value))
-        self.icon_copy_label.bind("<Button-1>", lambda event: copy_to_clipboard(self.colour_code_value))
+        # Bind inputs
         self.swatch_name.bind("<Button-1>", lambda event: self.update_swatch_name())
+        self.bind("<Button-1>", lambda event: copy_to_clipboard(self.colour_code_value))
+
+        self.colour_code_value.bind("<Button-1>", lambda e: copy_to_clipboard(self.colour_code_value))
+        self.icon_copy_label.bind("<Button-1>", lambda event: copy_to_clipboard(self.colour_code_value))
+        
+
+        left_button.bind("<Button-1>", lambda event: self.move_left())
+        right_button.bind("<Button-1>", lambda event: self.move_right())
     
         def copy_to_clipboard(widget):
             """
