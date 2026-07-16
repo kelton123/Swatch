@@ -370,7 +370,7 @@ class ColourCoperUI:
                 raise ValueError
             
         except ValueError:
-            messagebox.showwarning("Warning", "Please enter a valid value between -95 to 95", parent=self.root)
+            messagebox.showwarning("Warning", "Please enter a valid value between -95 to 100", parent=self.root)
             return
 
         self.tint_entry.delete(0, "end")
@@ -381,10 +381,11 @@ class ColourCoperUI:
         else:
             self.tint_entry.insert(0, f"{tint_value}%")
 
-        swatches = self.get_active_tab_swatches()
-        if swatches:
-            for swatch in swatches:
-                swatch.update_colour_tint(int(tint_value))
+        for tab_frame, tab_data in self.tabs.items():
+            swatches = tab_frame.winfo_children()
+            if swatches:
+                for swatch in swatches:
+                    swatch.update_colour_tint(int(tint_value))
 
     # EYEDROPPER FUNCTIONS
     def start_eyedropper(self):

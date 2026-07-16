@@ -299,23 +299,25 @@ class Swatch(tk.Frame):
         new_hex_code = f"#{r:02x}{g:02x}{b:02x}"
         self.colour_code_value.config(text= self.convert_hex_code(new_hex_code, self.active_format))
 
+        text_colour = self.select_by_brightness(cl.CC_WHITE, cl.CC_BLACK, self.calculate_brightness(*self._hex_to_rgb(new_hex_code)))
         # Update widget backgrounds to the new colour
         self.config(bg= new_hex_code)
-        self.swatch_name.config(bg=new_hex_code)
-        self.delete_button.config(bg=new_hex_code)
-        self.icon_copy_label.config(bg=new_hex_code)
-        self.colour_code_value.config(bg=new_hex_code)
+        self.swatch_name.config(bg=new_hex_code, fg=text_colour)
+        self.delete_button.config(bg=new_hex_code, fg=text_colour)
+        self.colour_code_value.config(bg=new_hex_code, fg=text_colour)
+
+        icon_label = self.select_by_brightness(self.icon_copy_light, self.icon_copy_dark, self.calculate_brightness(*self._hex_to_rgb(new_hex_code)))
+        self.icon_copy_label.config(bg=new_hex_code, image=icon_label)
 
     
     def _create_widgets(self):
         # Determine text colour based on background brightness for readability
         # (Dark backgrounds get white text, light backgrounds get black text)
-        r, g, b = self.rgb_code
-        brightness = (r * 299 + g * 587 + b * 114) / 1000
-        text_color = cl.CC_WHITE if brightness < 125 else cl.CC_BLACK
+        brightness = self.calculate_brightness(*self.rgb_code)
+        text_colour = self.select_by_brightness(cl.CC_WHITE, cl.CC_BLACK, brightness)
         
         # UI Styling configurations
-        lbl_opts = {"bg": self.hex_code, "fg": text_color, "anchor": "w"}
+        lbl_opts = {"bg": self.hex_code, "fg": text_colour, "anchor": "w"}
         
         # Add a padding for column 1
         self.columnconfigure(1, weight=2)
@@ -343,7 +345,7 @@ class Swatch(tk.Frame):
         self.colour_code_value.grid(row = 1, column = 0, sticky = "w", padx = (10, 0), pady = (2,10))
 
         # Copy Icon
-        icon_copy = self.icon_copy_light if brightness < 125 else self.icon_copy_dark
+        icon_copy = self.select_by_brightness(self.icon_copy_light, self.icon_copy_dark, brightness)
 
         self.icon_copy_label = tk.Label(self, image=icon_copy, **lbl_opts)
         self.icon_copy_label.image = icon_copy 
@@ -406,6 +408,12 @@ class Swatch(tk.Frame):
                 self.active_format = "hsl"
             case _:
                 self.colour_code_value.config(text=self.hex_code)
+    
+    def calculate_brightness(self, r, g, b):
+        return (r * 299 + g * 587 + b * 114) / 1000
+    
+    def select_by_brightness(self, option_one, option_two, brightness):
+        return option_one if brightness < 125 else option_two
 
     def update_swatch_name(self):
         '''
