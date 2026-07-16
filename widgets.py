@@ -306,6 +306,8 @@ class Swatch(tk.Frame):
         self.swatch_name.config(bg=new_hex_code, fg=text_colour)
         self.delete_button.config(bg=new_hex_code, fg=text_colour)
         self.colour_code_value.config(bg=new_hex_code, fg=text_colour)
+        self.left_button.config(bg=new_hex_code, fg=text_colour)
+        self.right_button.config(bg=new_hex_code, fg=text_colour)
 
         icon_label = self.select_by_brightness(self.icon_copy_light, self.icon_copy_dark, self.calculate_brightness(*self._hex_to_rgb(new_hex_code)))
         self.icon_copy_label.config(bg=new_hex_code, image=icon_label)
@@ -343,23 +345,21 @@ class Swatch(tk.Frame):
         active_colour_code = self._get_active_colour_code()
 
         self.colour_code_value = tk.Label(self, text = f"{active_colour_code}", font=("Arial", 14), **lbl_opts)
-        self.colour_code_value.grid(row = 1, column = 0, sticky = "w", padx = (10, 0), pady = (2,2))
+        self.colour_code_value.grid(row = 1, column = 0, sticky = "w", padx = (10, 0), pady = (4,0))
 
         # Copy Icon
         icon_copy = self.select_by_brightness(self.icon_copy_light, self.icon_copy_dark, brightness)
 
         self.icon_copy_label = tk.Label(self, image=icon_copy, **lbl_opts)
         self.icon_copy_label.image = icon_copy 
-        self.icon_copy_label.grid(row=1, column=2, sticky="e", padx = (0, 10), pady = (2,2))
+        self.icon_copy_label.grid(row=1, column=2, sticky="e", padx = (0, 10), pady = (4,0))
 
         # Swatch position management widgets
-        left_button = tk.Label(self, text = "←", font=("Arial", 14), **lbl_opts)
-        left_button.grid(row=2, column=0, sticky="w", padx = (10, 0), pady = (2,10))
+        self.left_button = tk.Label(self, text = "←", font=("Arial", 14), **lbl_opts)
+        self.left_button.grid(row=2, column=0, sticky="w", padx = (10, 0), pady = (0,10))
         
-
-        right_button = tk.Label(self, text="→", font=("Arial", 14), **lbl_opts)
-        right_button.grid(row=2, column=2, sticky="e", padx = (0, 10), pady = (2,10))
-        
+        self.right_button = tk.Label(self, text="→", font=("Arial", 14), **lbl_opts)
+        self.right_button.grid(row=2, column=2, sticky="e", padx = (0, 10), pady = (0,10))
 
         # Bind inputs
         self.swatch_name.bind("<Button-1>", lambda event: self.update_swatch_name())
@@ -369,8 +369,8 @@ class Swatch(tk.Frame):
         self.icon_copy_label.bind("<Button-1>", lambda event: copy_to_clipboard(self.colour_code_value))
         
 
-        left_button.bind("<Button-1>", lambda event: self.move_left())
-        right_button.bind("<Button-1>", lambda event: self.move_right())
+        self.left_button.bind("<Button-1>", lambda event: self.move_left())
+        self.right_button.bind("<Button-1>", lambda event: self.move_right())
     
         def copy_to_clipboard(widget):
             """

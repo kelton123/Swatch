@@ -91,7 +91,7 @@ class ColourCoperUI:
 
         # Colour code format dropdown
         # Dropdown options  
-        self.colour_codes = ["hex", "rgb", "cmyk", "hsl", "css"]
+        self.colour_codes = ["hex", "rgb", "cmyk", "hsl"]
 
         self.format_combobox = ttk.Combobox(self.header_frame, values=self.colour_codes, width=5, state="readonly")
         self.format_combobox.set("hex")
