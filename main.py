@@ -469,7 +469,6 @@ class ColourCoperUI:
         # Grab the RGB color at those coordinates from our captured image
         pixel_color = self.screen_img.getpixel((actual_x, actual_y))
         r, g, b = pixel_color[:3]
-        print(pixel_color)
 
         # Close the overlay and restore the main window
         self.close_overlay()
