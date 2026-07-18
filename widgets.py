@@ -496,7 +496,7 @@ class Swatch(tk.Frame):
             if len(name) > 10:
                 font_size = 14
 
-            self.swatch_name.config(text=name, font=("Arial", font_size))
+            self.swatch_name.config(text=name, font=("Arial", font_size, "bold"))
             popup.destroy()
         
         def close_popup(self):
