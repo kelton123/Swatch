@@ -385,7 +385,7 @@ class Swatch(tk.Frame):
 
             match self.active_format:
                 case "hex":
-                    colour_code_to_copy = self.hex_code[1:]
+                    colour_code_to_copy = self.hex_code
                 case "rgb":
                     colour_code_to_copy = self.rgb_code
                 case "cmyk":
@@ -486,7 +486,17 @@ class Swatch(tk.Frame):
                 messagebox.showwarning("Warning", "Please enter a project name!", parent=popup)
                 return
             
-            self.swatch_name.config(text=name)
+            # Check for name length
+            if len(name) > 20:
+                messagebox.showwarning("Warning", "Name too long. Please keep the name under 20 characters", parent=popup)
+                return
+            
+            # Update font size based on name length
+            font_size = 20
+            if len(name) > 10:
+                font_size = 14
+
+            self.swatch_name.config(text=name, font=("Arial", font_size))
             popup.destroy()
         
         def close_popup(self):
