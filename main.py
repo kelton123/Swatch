@@ -159,6 +159,10 @@ class ColourCoperUI:
         self.add_notebook.bind("<Enter>", self.on_hover_label)
         self.add_notebook.bind("<Leave>", self.on_leave_label)
 
+        # Add a vertical separator
+        separator = tk.Frame(self.header_frame, width=2, bg=cl.CC_LIGHT_GREY)
+        separator.grid(row=0, column=8, sticky="ns", padx=4, pady=30)
+
         # Save swatch palette button aligned to the right of the window.
         save_icon = Image.open("icons/save-01.png")
         save_icon = save_icon.resize((18,18))
@@ -170,7 +174,7 @@ class ColourCoperUI:
             padx=1,
             pady=1
         )
-        self.save_border.grid(row=0, column=8, padx=4)
+        self.save_border.grid(row=0, column=9, padx=4)
 
         self.save_button = tk.Label(
             self.save_border,
@@ -197,7 +201,7 @@ class ColourCoperUI:
             padx=1,
             pady=1
         )
-        self.load_border.grid(row = 0, column = 9, padx=4)
+        self.load_border.grid(row = 0, column = 10, padx=4)
 
         self.load_button = tk.Label(
             self.load_border,
@@ -224,7 +228,7 @@ class ColourCoperUI:
             padx=1,
             pady=1
         )
-        self.delete_border.grid(row = 0, column = 10, padx=4)
+        self.delete_border.grid(row = 0, column = 11, padx=4)
 
         self.delete_palette_button = tk.Label(
             self.delete_border, 
