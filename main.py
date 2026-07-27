@@ -32,14 +32,14 @@ class ColourCoperUI:
     def __init__(self, root):
         self.root = root
         self.root.title("Swatch")
-        self.root.geometry("960x540")
-        self.root.minsize(720,405)
+        self.root.geometry("854x480")
+        self.root.minsize(854,480)
         self.root.config(background = cl.CC_WHITE)
         self.root.resizable(False, False)
 
         self.root.bind('<<NotebookTabChanged>>', lambda event: self.root.update_idletasks())
 
-        self.centre_launch(self.root)
+        self.centre_launch(self.root, 854, 480)
 
         # Tracks every open project tab, keyed by its content frame (the
         # widget the Notebook uses as the tab's identifier): frame ->
@@ -139,7 +139,7 @@ class ColourCoperUI:
 
         self.new_swatch_button = tk.Label(
             self.new_swatch_border,
-            text="  new swatch",
+            text="  swatch",
             image=self.new_swatch_image,
             highlightbackground=cl.CC_WHITE,
             bg=cl.CC_PURE_WHITE,
