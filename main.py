@@ -76,11 +76,6 @@ class ColourCoperUI:
         '''
         # Configure column 1 and 5 to expand and create white space.
         self.header_frame.columnconfigure(3, weight=2)
-        #self.header_frame.columnconfigure(5, weight=2)
-
-        # Project name label aligned to the left of the window.
-        #self.project_heading = widgets.LabelHeading(self.header_frame, text = "Swatch")
-        #self.project_heading.grid(row = 0, column = 0, sticky = "w", pady = 20)
 
         # SWATCH TOOLS
         # Tint adjustment
