@@ -175,6 +175,10 @@ class ColourCoperUI:
         self.add_notebook.bind("<Enter>", self.on_hover_label)
         self.add_notebook.bind("<Leave>", self.on_leave_label)
 
+        # Add the hover label class
+        widgets.CursorFollowerLabel(self.new_project_border, text="Add new project tab")
+        widgets.CursorFollowerLabel(self.add_notebook, text="Add new project tab")
+
         # Save swatch palette button aligned to the right of the window.
         save_icon = Image.open("icons/save-01.png")
         save_icon = save_icon.resize((18,18))

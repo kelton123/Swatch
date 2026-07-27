@@ -547,3 +547,58 @@ class Swatch(tk.Frame):
         self.destroy()
         if self.on_delete:
             self.on_delete()
+
+class CursorFollowerLabel:
+    def __init__(self, target_widget, text, offset_x=12, offset_y=12):
+        self.target_widget = target_widget
+        self.text = text
+        self.offset_x = offset_x
+        self.offset_y = offset_y
+        self.tooltip_window = None
+
+        # Bind cursor events to the frame
+        self.target_widget.bind("<Enter>", self._on_enter, add="+")
+        self.target_widget.bind("<Motion>", self._on_move, add="+")
+        self.target_widget.bind("<Leave>", self._on_leave, add="+")
+
+    def _on_enter(self, event):
+        if self.tooltip_window is not None:
+            return
+
+        # 1. Create a borderless floating window
+        self.tooltip_window = tk.Toplevel(self.target_widget)
+        self.tooltip_window.overrideredirect(True)  # Removes window title bar/borders
+        
+        # Ensures floating label stays on top of the main app window
+        self.tooltip_window.wm_attributes("-topmost", True) 
+
+        # 2. Add the custom styled label inside the window
+        label = tk.Label(
+            self.tooltip_window,
+            text=self.text,
+            bg="#1f2937",        # Dark modern background
+            fg="#ffffff",        # White text
+            font=("Arial", 9, "bold"),
+            padx=8,
+            pady=4,
+            bd=0
+        )
+        label.pack()
+
+        # Set initial position
+        self._update_position(event)
+
+    def _on_move(self, event):
+        self._update_position(event)
+
+    def _on_leave(self, event):
+        if self.tooltip_window:
+            self.tooltip_window.destroy()
+            self.tooltip_window = None
+
+    def _update_position(self, event):
+        if self.tooltip_window:
+            # event.x_root and event.y_root give screen-relative coordinates
+            x = event.x_root + self.offset_x
+            y = event.y_root + self.offset_y
+            self.tooltip_window.geometry(f"+{x}+{y}")
