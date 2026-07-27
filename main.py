@@ -54,7 +54,7 @@ class ColourCoperUI:
         '''
         # Header section with project name, save and import buttons.
         self.header_frame = tk.Frame(root, height = 100, bg = cl.CC_WHITE)
-        self.header_frame.pack(side = "top", fill = "x", padx = WINDOW_PADDING)
+        self.header_frame.pack(side = "top", fill = "x", padx = WINDOW_PADDING, pady=(WINDOW_PADDING / 2))
 
         # Tab + swatches section: the Notebook shows the tab strip and the
         # active tab's swatch cards together, so this frame needs to expand
@@ -75,18 +75,18 @@ class ColourCoperUI:
         |[project name]                 [save][load]|
         '''
         # Configure column 1 and 5 to expand and create white space.
-        self.header_frame.columnconfigure(1, weight=2)
-        self.header_frame.columnconfigure(5, weight=2)
+        self.header_frame.columnconfigure(3, weight=2)
+        #self.header_frame.columnconfigure(5, weight=2)
 
         # Project name label aligned to the left of the window.
-        self.project_heading = widgets.LabelHeading(self.header_frame, text = "Swatch")
-        self.project_heading.grid(row = 0, column = 0, sticky = "w", pady = 20)
+        #self.project_heading = widgets.LabelHeading(self.header_frame, text = "Swatch")
+        #self.project_heading.grid(row = 0, column = 0, sticky = "w", pady = 20)
 
         # SWATCH TOOLS
         # Tint adjustment
         self.tint_entry = tk.Entry(self.header_frame, width=5,highlightbackground=cl.CC_WHITE)
         self.tint_entry.insert(0, "100%")  # Pre-fill with hashtag as a helper
-        self.tint_entry.grid(row=0, column=2)
+        self.tint_entry.grid(row=0, column=0)
         self.tint_entry.bind("<FocusOut>", self.update_swatch_tint)
 
         # Colour code format dropdown
@@ -95,7 +95,7 @@ class ColourCoperUI:
 
         self.format_combobox = ttk.Combobox(self.header_frame, values=self.colour_codes, width=5, state="readonly")
         self.format_combobox.set("hex")
-        self.format_combobox.grid(row=0, column=3)
+        self.format_combobox.grid(row=0, column=1)
         self.format_combobox.bind("<<ComboboxSelected>>", self.update_all_swatches_label)
 
         # Eyedropper tool to create a swatch
@@ -109,7 +109,7 @@ class ColourCoperUI:
             padx=1,
             pady=1
         )
-        self.eyedrop_button_border.grid(row=0, column=4, padx=4)
+        self.eyedrop_button_border.grid(row=0, column=2, padx=4)
 
         self.eyedrop_button = tk.Label(
             self.eyedrop_button_border,
@@ -135,7 +135,7 @@ class ColourCoperUI:
             padx=1,
             pady=1
         )
-        self.new_swatch_border.grid(row=0, column=6, padx=4)
+        self.new_swatch_border.grid(row=0, column=4, padx=4)
 
         self.new_swatch_button = tk.Label(
             self.new_swatch_border,
@@ -164,12 +164,11 @@ class ColourCoperUI:
             padx=1,
             pady=1
         )
-        self.new_project_border.grid(row=0, column=7, padx=4)
+        self.new_project_border.grid(row=0, column=5, padx=4)
 
         self.add_notebook = tk.Label(
             self.new_project_border,
             image=self.new_project_image,
-            text="   project",
             bg=cl.CC_PURE_WHITE,
             fg=cl.CC_BLACK,
             compound="left",
@@ -180,10 +179,6 @@ class ColourCoperUI:
         self.add_notebook.bind("<Button-1>", lambda event: self.add_new_project_tab())
         self.add_notebook.bind("<Enter>", self.on_hover_label)
         self.add_notebook.bind("<Leave>", self.on_leave_label)
-
-        # Add a vertical separator
-        separator = tk.Frame(self.header_frame, width=2, bg=cl.CC_LIGHT_GREY)
-        separator.grid(row=0, column=8, sticky="ns", padx=4, pady=30)
 
         # Save swatch palette button aligned to the right of the window.
         save_icon = Image.open("icons/save-01.png")
@@ -196,7 +191,7 @@ class ColourCoperUI:
             padx=1,
             pady=1
         )
-        self.save_border.grid(row=0, column=9, padx=4)
+        self.save_border.grid(row=0, column=7, padx=4)
 
         self.save_button = tk.Label(
             self.save_border,
@@ -223,7 +218,7 @@ class ColourCoperUI:
             padx=1,
             pady=1
         )
-        self.load_border.grid(row = 0, column = 10, padx=4)
+        self.load_border.grid(row = 0, column = 8, padx=4)
 
         self.load_button = tk.Label(
             self.load_border,
@@ -250,7 +245,7 @@ class ColourCoperUI:
             padx=1,
             pady=1
         )
-        self.delete_border.grid(row = 0, column = 11, padx=4)
+        self.delete_border.grid(row = 0, column =9, padx=4)
 
         self.delete_palette_button = tk.Label(
             self.delete_border, 
