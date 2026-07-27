@@ -11,7 +11,7 @@ from tkinter import ttk
 from tkinter import messagebox, filedialog
 import _tkinter # For tkinter errors
 
-from PIL import ImageGrab, ImageTk, Image, ImageCms
+from PIL import ImageTk, Image, ImageCms
 
 import widgets as widgets
 import colours as cl
@@ -102,25 +102,143 @@ class ColourCoperUI:
         self.eyedrop_button = tk.Button(self.header_frame, text="eyedrop", highlightbackground=cl.CC_WHITE, command=self.start_eyedropper)
         self.eyedrop_button.grid(row=0, column=4)
 
-        # Add a new tab for swatches.
-        self.add_notebook = tk.Button(self.header_frame, text="new swatch", highlightbackground = cl.CC_WHITE, command=self.add_new_swatch)
-        self.add_notebook.grid(row=0, column=6)
+        # Add a new swatch to the active tab
+        new_swatch_icon = Image.open("icons/plus.png")
+        new_swatch_icon = new_swatch_icon.resize((18,18))
+        self.new_swatch_image = ImageTk.PhotoImage(new_swatch_icon)
+
+        self.new_swatch_border = tk.Frame(
+            self.header_frame,
+            bg=cl.CC_LIGHT_GREY,
+            padx=1,
+            pady=1
+        )
+        self.new_swatch_border.grid(row=0, column=6, padx=4)
+
+        self.new_swatch_button = tk.Label(
+            self.new_swatch_border,
+            text="  new swatch",
+            image=self.new_swatch_image,
+            highlightbackground=cl.CC_WHITE,
+            bg=cl.CC_PURE_WHITE,
+            fg=cl.CC_BLACK,
+            compound="left"
+            )
+        self.new_swatch_button.pack(ipadx=4, ipady=4)
+
+        # Bind the new project button
+        self.new_swatch_button.bind("<Button-1>", lambda event: self.add_new_swatch())
+        self.new_swatch_button.bind("<Enter>", self.on_hover_label)
+        self.new_swatch_button.bind("<Leave>", self.on_leave_label)
 
         # Add a new tab for swatches.
-        self.add_notebook = tk.Button(self.header_frame, text="new project", highlightbackground = cl.CC_WHITE, command=self.add_new_project_tab)
-        self.add_notebook.grid(row=0, column=7)
+        new_folder_icon = Image.open("icons/folder-plus.png")
+        new_folder_icon = new_folder_icon.resize((18,18))
+        self.new_project_image = ImageTk.PhotoImage(new_folder_icon)
+
+        self.new_project_border = tk.Frame(
+            self.header_frame,
+            bg=cl.CC_LIGHT_GREY,
+            padx=1,
+            pady=1
+        )
+        self.new_project_border.grid(row=0, column=7, padx=4)
+
+        self.add_notebook = tk.Label(
+            self.new_project_border,
+            image=self.new_project_image,
+            text="   project",
+            bg=cl.CC_PURE_WHITE,
+            fg=cl.CC_BLACK,
+            compound="left",
+            )
+        self.add_notebook.pack(ipadx=4, ipady=4)
+
+        # Bind the new project button
+        self.add_notebook.bind("<Button-1>", lambda event: self.add_new_project_tab())
+        self.add_notebook.bind("<Enter>", self.on_hover_label)
+        self.add_notebook.bind("<Leave>", self.on_leave_label)
 
         # Save swatch palette button aligned to the right of the window.
-        self.save_button = tk.Button(self.header_frame, highlightbackground = cl.CC_WHITE, text = "save", command = self.save_active_tab)
-        self.save_button.grid(row = 0, column = 8)
+        save_icon = Image.open("icons/save-01.png")
+        save_icon = save_icon.resize((18,18))
+        self.save_image = ImageTk.PhotoImage(save_icon)
+
+        self.save_border = tk.Frame(
+            self.header_frame,
+            bg=cl.CC_LIGHT_GREY,
+            padx=1,
+            pady=1
+        )
+        self.save_border.grid(row=0, column=8, padx=4)
+
+        self.save_button = tk.Label(
+            self.save_border,
+            image=self.save_image,
+            bg=cl.CC_PURE_WHITE,
+            padx=5,
+            pady=5
+            )
+        self.save_button.pack(ipadx=4, ipady=4)
+
+        # Bind the save button
+        self.save_button.bind("<Button-1>", lambda event: self.save_active_tab())
+        self.save_button.bind("<Enter>", self.on_hover_label)
+        self.save_button.bind("<Leave>", self.on_leave_label)
 
         # Load swatches palette button aligned to the right of the window.
-        self.load_button = tk.Button(self.header_frame, highlightbackground = cl.CC_WHITE, text = "open", command = self.load_project_tab)
-        self.load_button.grid(row = 0, column = 9)
+        load_icon = Image.open("icons/folder-search.png")
+        load_icon = load_icon.resize((18,18))
+        self.load_image = ImageTk.PhotoImage(load_icon)
+
+        self.load_border = tk.Frame(
+            self.header_frame,
+            bg=cl.CC_LIGHT_GREY,
+            padx=1,
+            pady=1
+        )
+        self.load_border.grid(row = 0, column = 9, padx=4)
+
+        self.load_button = tk.Label(
+            self.load_border,
+            image=self.load_image,
+            bg=cl.CC_PURE_WHITE,
+            padx=5,
+            pady=5
+            )
+        self.load_button.pack(ipadx=4, ipady=4)
+
+        # Bind the load button
+        self.load_button.bind("<Button-1>", lambda event: self.load_project_tab())
+        self.load_button.bind("<Enter>", self.on_hover_label)
+        self.load_button.bind("<Leave>", self.on_leave_label)
 
         # Delete swatches palette button aligned to the right of the window.
-        self.delete_palette_button = tk.Button(self.header_frame, highlightbackground=cl.CC_WHITE, text="delete", command=self._open_delete_tab_popup)
-        self.delete_palette_button.grid(row=0, column=10)
+        delete_icon = Image.open("icons/trash.png")
+        delete_icon = delete_icon.resize((16,16))
+        self.delete_image = ImageTk.PhotoImage(delete_icon)
+
+        self.delete_border = tk.Frame(
+            self.header_frame,
+            bg=cl.CC_LIGHT_GREY,
+            padx=1,
+            pady=1
+        )
+        self.delete_border.grid(row = 0, column = 10, padx=4)
+
+        self.delete_palette_button = tk.Label(
+            self.delete_border, 
+            bg=cl.CC_PURE_WHITE,
+            image=self.delete_image,
+            padx=5,
+            pady=5,
+            )
+        self.delete_palette_button.pack(ipadx=4, ipady=4)
+
+        # Bind delete tab button
+        self.delete_palette_button.bind("<Button-1>", lambda event: self._open_delete_tab_popup())
+        self.delete_palette_button.bind("<Enter>", self.on_hover_label)
+        self.delete_palette_button.bind("<Leave>", self.on_leave_label)
 
         '''
         TAB SECTION
@@ -204,6 +322,24 @@ class ColourCoperUI:
         center_y = int(screen_height/2 - window_height / 2)
 
         return center_x, center_y
+    
+    def on_hover_label(self, event=None):
+        if event and event.widget:
+            self._set_bg_recursive(event.widget, cl.CC_LIGHT_GREY)
+
+    def on_leave_label(self, event=None):
+        if event and event.widget:
+            self._set_bg_recursive(event.widget, cl.CC_PURE_WHITE)
+
+    def _set_bg_recursive(self, widget, color):
+        widgets_to_update = [widget]
+        while widgets_to_update:
+            current = widgets_to_update.pop()
+            try:
+                current.config(bg=color)
+            except tk.TclError:
+                pass
+            widgets_to_update.extend(current.winfo_children())
     
     def cycle_colour_format(self, event=None):
         # Get the current format
