@@ -554,7 +554,7 @@ class ColourCoperUI:
         if len(self.notebook.children) == 0:
             messagebox.showwarning("Warning", "No project tabs to add swatch to!", parent=self.root)
             return
-        # 1. Hide the main window so it doesn't appear in the screenshot
+        # Hide the main window so it doesn't appear in the screenshot
         self.root.withdraw()
         
         # Force a UI update and add a tiny delay to ensure the window is hidden
