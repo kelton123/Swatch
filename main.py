@@ -99,8 +99,30 @@ class ColourCoperUI:
         self.format_combobox.bind("<<ComboboxSelected>>", self.update_all_swatches_label)
 
         # Eyedropper tool to create a swatch
-        self.eyedrop_button = tk.Button(self.header_frame, text="eyedrop", highlightbackground=cl.CC_WHITE, command=self.start_eyedropper)
-        self.eyedrop_button.grid(row=0, column=4)
+        dropper_icon = Image.open("icons/dropper.png")
+        dropper_icon = dropper_icon.resize((18,18))
+        self.eyedrop_icon = ImageTk.PhotoImage(dropper_icon)
+
+        self.eyedrop_button_border = tk.Frame(
+            self.header_frame,
+            bg=cl.CC_LIGHT_GREY,
+            padx=1,
+            pady=1
+        )
+        self.eyedrop_button_border.grid(row=0, column=4, padx=4)
+
+        self.eyedrop_button = tk.Label(
+            self.eyedrop_button_border,
+            image=self.eyedrop_icon,
+            highlightbackground=cl.CC_WHITE,
+            bg=cl.CC_PURE_WHITE,
+            )
+        self.eyedrop_button.pack(ipadx=4, ipady=4)
+
+        # Bind the new swatch button
+        self.eyedrop_button.bind("<Button-1>", lambda event: self.start_eyedropper())
+        self.eyedrop_button.bind("<Enter>", self.on_hover_label)
+        self.eyedrop_button.bind("<Leave>", self.on_leave_label)
 
         # Add a new swatch to the active tab
         new_swatch_icon = Image.open("icons/plus.png")
@@ -126,7 +148,7 @@ class ColourCoperUI:
             )
         self.new_swatch_button.pack(ipadx=4, ipady=4)
 
-        # Bind the new project button
+        # Bind the new swatch button
         self.new_swatch_button.bind("<Button-1>", lambda event: self.add_new_swatch())
         self.new_swatch_button.bind("<Enter>", self.on_hover_label)
         self.new_swatch_button.bind("<Leave>", self.on_leave_label)
