@@ -49,6 +49,11 @@ class ColourCoperUI:
         # which tab is active and how tabs are displayed/switched.
         self.tabs = {}
 
+        # Load images that can be used later
+        dropper_icon = Image.open("icons/dropper.png")
+        dropper_icon = dropper_icon.resize((18,18))
+        self.eyedrop_icon = ImageTk.PhotoImage(dropper_icon)
+
         '''
         LAYOUT
         '''
@@ -101,7 +106,7 @@ class ColourCoperUI:
 
         # Eyedropper tool to create a swatch
         dropper_icon = Image.open("icons/dropper.png")
-        dropper_icon = dropper_icon.resize((18,18))
+        dropper_icon = dropper_icon.resize((12,12))
         self.eyedrop_icon = ImageTk.PhotoImage(dropper_icon)
 
         self.eyedrop_button_border = tk.Frame(
@@ -410,31 +415,80 @@ class ColourCoperUI:
     # Create a new swatch inside the given tab
     def open_swatch_popup(self, tab_id, hex=None):
         # Create the top-level pop-up window        
-        popup = widgets.create_popup(self.root, "Add Swatch")
+        popup = widgets.create_popup(self.root, "Add Swatch", 260, 260)
 
+        # POPUP LAYOUT
         # Configure layout spacing for the popup
         popup.columnconfigure(1, weight=1)
         popup.config(padx=15, pady=15)
 
-        # 2. Name Entry Widget
-        lbl_name = tk.Label(popup, text="Name:")
-        lbl_name.grid(row=0, column=0, sticky="w", pady=5)
+        # Colour preview
+        colour_preview = tk.Frame(
+            popup,
+            background="#ff0000",
+            height=75
+        )
+        colour_preview.grid(row=0, column=0, rowspan=2, columnspan=3, sticky="nesw", pady=5)
+
+        # Name Entry Widget
+        lbl_name = tk.Label(popup, text="Name:", bg=cl.CC_WHITE)
+        lbl_name.grid(row=2, column=0, sticky="w", pady=5)
         
-        ent_name = tk.Entry(popup)
-        ent_name.grid(row=0, column=1, sticky="ew", padx=(10, 0), pady=5)
+        ent_name = tk.Entry(popup, bg=cl.CC_WHITE)
+        ent_name.grid(row=2, column=1, columnspan=2, sticky="ew", padx=(10, 0), pady=5)
         ent_name.focus_set()  # Automatically place cursor in this box
 
-        # 3. Hex Entry Widget
-        lbl_hex = tk.Label(popup, text="Hex Code: #")
-        lbl_hex.grid(row=1, column=0, sticky="w", pady=5)
+        # Hex Entry Widget
+        lbl_hex = tk.Label(popup, text="Hex Code: #", bg=cl.CC_WHITE)
+        lbl_hex.grid(row=3, column=0, sticky="w", pady=5)
         
-        ent_hex = tk.Entry(popup)
-        ent_hex.grid(row=1, column=1, sticky="ew", padx=(10, 0), pady=5)
+        ent_hex = tk.Entry(popup, bg=cl.CC_WHITE)
+        ent_hex.grid(row=3, column=1, sticky="ew", padx=(10, 0), pady=5)
+
+        # Bind every key press to check if a hex code has been supplied to update the colour preview
+        def update_colour_preview(self):
+                    hex_code = ent_hex.get().strip()
+                    if len(hex_code) != 6:
+                        return
+
+                    # Try to update the preview frame background colour.
+                    try:
+                        colour_preview.config(bg=f"#{hex_code}")
+                    except _tkinter.TclError:
+                        messagebox.showwarning("Warning", "Please enter a valid hex code, e.g. #FF8D28", parent=popup)
+                        return
+                    
+        ent_hex.bind("<KeyRelease>", update_colour_preview)
+
+        # Eyedropper button to get a hex code from the screen (by taking a screenshot)
+        eyedrop_button_border = tk.Frame(
+            popup,
+            bg=cl.CC_LIGHT_GREY,
+            padx=1,
+            pady=1
+        )
+        eyedrop_button_border.grid(row=3, column=2, padx=4)
+
+        eyedrop_button = tk.Label(
+            eyedrop_button_border,
+            image=self.eyedrop_icon,
+            highlightbackground=cl.CC_WHITE,
+            bg=cl.CC_PURE_WHITE,
+            )
+        eyedrop_button.pack(ipadx=4, ipady=4)
+
+        # Bind the new swatch button
+        eyedrop_button.bind("<Button-1>", lambda event: self.start_eyedropper())
+        self.eyedrop_button.bind("<Enter>", self.on_hover_label)
+        eyedrop_button.bind("<Leave>", self.on_leave_label)
+
+        # Add the hover label class
+        widgets.CursorFollowerLabel(eyedrop_button, text="Create swatch from an eyedrop")
 
         if hex:
             ent_hex.insert(0, hex)
 
-        # 4. Action Functions
+        #  BUTTON FUNCTIONS
         def save_action():
             name_data = ent_name.get().strip().capitalize()
             hex_data  = ent_hex.get().strip()
@@ -464,23 +518,23 @@ class ColourCoperUI:
 
             popup.destroy()  # Close the popup window after saving [3]
 
-        def _save_action_shortcut(slef):
+        def _save_action_shortcut(self):
             save_action()
 
         def close_popup(self):
             popup.destroy()
 
-        # 5. Buttons Layout Frame (at the bottom)
-        btn_frame = tk.Frame(popup)
-        btn_frame.grid(row=2, column=0, columnspan=2, sticky="ew", pady=(20, 0))
+        # Buttons Layout Frame (at the bottom)
+        btn_frame = tk.Frame(popup, bg=cl.CC_WHITE)
+        btn_frame.grid(row=4, column=0, columnspan=3, sticky="ew", pady=(20, 0))
         btn_frame.columnconfigure(0, weight=1) # Invisible space pushing buttons right
 
         # Close Button
-        btn_close = tk.Button(btn_frame, text="Close", command=popup.destroy)  # [3]
+        btn_close = tk.Button(btn_frame, text="Close", bg=cl.CC_WHITE, command=popup.destroy)  # [3]
         btn_close.grid(row=0, column=1, padx=5)
 
         # Save Button
-        btn_save = tk.Button(btn_frame, text="Save", command=save_action)
+        btn_save = tk.Button(btn_frame, text="Save", bg=cl.CC_WHITE, command=save_action)
         btn_save.grid(row=0, column=2, padx=5)
 
         # Bind keyboard inputs

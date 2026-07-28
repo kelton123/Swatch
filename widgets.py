@@ -25,7 +25,7 @@ def create_popup(parent_widget, title="", width=260, height=150):
     '''
     main_window = parent_widget.winfo_toplevel()
 
-    popup = tk.Toplevel(main_window)
+    popup = tk.Toplevel(main_window, bg=cl.CC_WHITE)
     popup.title(title)
     popup.resizable(False, False)
 
