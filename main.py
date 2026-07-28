@@ -90,7 +90,7 @@ class ColourCoperUI:
         self.tint_entry.bind("<FocusOut>", self.update_swatch_tint)
 
         # Add the hover label class
-        widgets.CursorFollowerLabel(self.tint_entry, text="Update Tint/Shade: -95 to 100")
+        widgets.CursorFollowerLabel(self.tint_entry, text=f"Tint + Shade Adjustment\n\nUpdate the percentage to add more white (0-100)\nor more black (-95-0) to all swatches.")
 
         # Colour code format dropdown
         # Dropdown options  
@@ -102,36 +102,7 @@ class ColourCoperUI:
         self.format_combobox.bind("<<ComboboxSelected>>", self.update_all_swatches_label)
 
         # Add the hover label class
-        widgets.CursorFollowerLabel(self.format_combobox, text="Change colour format")
-
-        # Eyedropper tool to create a swatch
-        dropper_icon = Image.open("icons/dropper.png")
-        dropper_icon = dropper_icon.resize((12,12))
-        self.eyedrop_icon = ImageTk.PhotoImage(dropper_icon)
-
-        self.eyedrop_button_border = tk.Frame(
-            self.header_frame,
-            bg=cl.CC_LIGHT_GREY,
-            padx=1,
-            pady=1
-        )
-        self.eyedrop_button_border.grid(row=0, column=2, padx=4)
-
-        self.eyedrop_button = tk.Label(
-            self.eyedrop_button_border,
-            image=self.eyedrop_icon,
-            highlightbackground=cl.CC_WHITE,
-            bg=cl.CC_PURE_WHITE,
-            )
-        self.eyedrop_button.pack(ipadx=4, ipady=4)
-
-        # Bind the new swatch button
-        self.eyedrop_button.bind("<Button-1>", lambda event: self.start_eyedropper())
-        self.eyedrop_button.bind("<Enter>", self.on_hover_label)
-        self.eyedrop_button.bind("<Leave>", self.on_leave_label)
-
-        # Add the hover label class
-        widgets.CursorFollowerLabel(self.eyedrop_button, text="Create swatch from an eyedrop")
+        widgets.CursorFollowerLabel(self.format_combobox, text=f"Colour Format | ⌘ + f\n\nUse the dropdown to update the colour code on all swatches.")
 
         # Add a new swatch to the active tab
         new_swatch_icon = Image.open("icons/plus.png")
@@ -163,7 +134,7 @@ class ColourCoperUI:
         self.new_swatch_button.bind("<Leave>", self.on_leave_label)
 
         # Add the hover label class
-        widgets.CursorFollowerLabel(self.new_swatch_button, text="Add new swatch")
+        widgets.CursorFollowerLabel(self.new_swatch_button, text="New Swatch | ⌘ + n")
 
         # Add a new tab for swatches.
         new_folder_icon = Image.open("icons/folder-plus.png")
@@ -193,7 +164,7 @@ class ColourCoperUI:
         self.add_notebook.bind("<Leave>", self.on_leave_label)
 
         # Add the hover label class
-        widgets.CursorFollowerLabel(self.add_notebook, text="Add new project")
+        widgets.CursorFollowerLabel(self.add_notebook, text="New Project | ⌘ + p")
 
         # Save swatch palette button aligned to the right of the window.
         save_icon = Image.open("icons/save-01.png")
@@ -223,7 +194,7 @@ class ColourCoperUI:
         self.save_button.bind("<Leave>", self.on_leave_label)
 
         # Add the hover label class
-        widgets.CursorFollowerLabel(self.save_button, text="Save project")
+        widgets.CursorFollowerLabel(self.save_button, text="Save Project | ⌘ + s")
 
         # Load swatches palette button aligned to the right of the window.
         load_icon = Image.open("icons/folder-open.png")
@@ -253,7 +224,7 @@ class ColourCoperUI:
         self.load_button.bind("<Leave>", self.on_leave_label)
 
         # Add the hover label class
-        widgets.CursorFollowerLabel(self.load_button, text="Open a project")
+        widgets.CursorFollowerLabel(self.load_button, text="Open Project | ⌘ + o")
 
         # Delete swatches palette button aligned to the right of the window.
         delete_icon = Image.open("icons/trash.png")
@@ -283,7 +254,7 @@ class ColourCoperUI:
         self.delete_palette_button.bind("<Leave>", self.on_leave_label)
 
         # Add the hover label class
-        widgets.CursorFollowerLabel(self.delete_palette_button, text="Delete project")
+        widgets.CursorFollowerLabel(self.delete_palette_button, text="Delete Project | ⌘ + d")
 
         '''
         TAB SECTION
@@ -293,22 +264,14 @@ class ColourCoperUI:
         # The Notebook control handles tab buttons, switching, and active
         # styling automatically - we just add/remove/rename its child frames.
         self.notebook = ttk.Notebook(self.tab_frame)
-        self.notebook.pack(side = "left", fill = "both", expand = True, pady = 10)
+        self.notebook.pack(side = "left", fill = "both", expand = True)
 
 
         '''
         FOOTER SECTION
         '''
-        # Configure column 1 to expand and create white space.
-        self.footer_frame.columnconfigure(0, weight=2)
-        self.footer_frame.columnconfigure(2, weight=2)
-
         footer_text = widgets.LabelFooter(self.footer_frame, text = "Designed & Developed by Kelton Boyter-Grant", bg = cl.CC_WHITE)
-        footer_text.grid(row=0, column=1, padx=20, pady=(0, 20))
-
-        # Contains some helpful information for first time users if they need it.
-        self.help_button = tk.Button(self.footer_frame, text="?", highlightbackground=cl.CC_WHITE, command=self.open_help_popup)
-        self.help_button.grid(row=0, column=3, pady=(0,20), padx=0)
+        footer_text.pack(padx=20, pady=(0, 20), expand=True)
 
         '''
         KEYBOARD BINDINGS
@@ -447,16 +410,16 @@ class ColourCoperUI:
 
         # Bind every key press to check if a hex code has been supplied to update the colour preview
         def update_colour_preview(self):
-                    hex_code = ent_hex.get().strip()
-                    if len(hex_code) != 6:
-                        return
+            hex_code = ent_hex.get().strip()
+            if len(hex_code) != 6:
+                return
 
-                    # Try to update the preview frame background colour.
-                    try:
-                        colour_preview.config(bg=f"#{hex_code}")
-                    except _tkinter.TclError:
-                        messagebox.showwarning("Warning", "Please enter a valid hex code, e.g. #FF8D28", parent=popup)
-                        return
+            # Try to update the preview frame background colour.
+            try:
+                colour_preview.config(bg=f"#{hex_code}")
+            except _tkinter.TclError:
+                messagebox.showwarning("Warning", "Please enter a valid hex code, e.g. #FF8D28", parent=popup)
+                return
                     
         ent_hex.bind("<KeyRelease>", update_colour_preview)
 
@@ -479,11 +442,11 @@ class ColourCoperUI:
 
         # Bind the new swatch button
         eyedrop_button.bind("<Button-1>", lambda event: self.start_eyedropper())
-        self.eyedrop_button.bind("<Enter>", self.on_hover_label)
+        eyedrop_button.bind("<Enter>", self.on_hover_label)
         eyedrop_button.bind("<Leave>", self.on_leave_label)
 
         # Add the hover label class
-        widgets.CursorFollowerLabel(eyedrop_button, text="Create swatch from an eyedrop")
+        widgets.CursorFollowerLabel(eyedrop_button, text="Eyedropper | click a pixel to sample its hex code")
 
         if hex:
             ent_hex.insert(0, hex)
@@ -986,54 +949,6 @@ class ColourCoperUI:
             self.tabs[tab_id]["filepath"] = file
             self.tabs[tab_id]["dirty"] = False
             self._update_tab_label(tab_id)
-
-    '''
-    HELP BUTTON POPUP
-    '''
-    def open_help_popup(self, event=None):
-        # Create the top-level pop-up window
-        popup = tk.Toplevel(self.root, bg=cl.CC_WHITE)
-        popup.title("Information")
-        popup.resizable(False, False)
-
-        # Launch the popup in the centre of the root window.
-        widgets.centre_launch_popup(self.root ,popup, 400, 260)
-        
-        # Make the popup modal (blocks interaction with main window)
-        popup.transient(self.root)   # Keeps popup on top of main window [2]
-        popup.grab_set()             # Directs all events to this window [1, 3]
-
-        # List of information
-        information_text = (f"Swatch is an app focused on colour management "
-                             "across design disiplines to help organise "
-                             "the project colour palettes.")
-
-        popup_heading = tk.Message(popup, text=information_text, font=("Arial", 14), bg=cl.CC_WHITE, fg=cl.CC_BLACK, width=370)
-        popup_heading.pack(anchor="nw", padx=20, pady=(20,0), expand=True)
-
-        # Keyboard shortcuts
-        keyboard_shortcuts_heading = tk.Message(popup, text="Keyboard shortcuts", font=("Arial", 14, "bold"), bg=cl.CC_WHITE, fg=cl.CC_BLACK, width=380)
-        keyboard_shortcuts_heading.pack(anchor="nw", padx=20, pady=0, expand=True)
-
-        keyboard_shortcuts = ("• Save: ⌘ + s\n"
-                             "• Load: ⌘ + o\n"
-                             "• New project tab: ⌘ + p\n"
-                             "• New swatch: ⌘ + n\n"
-                             "• Cycle colour formats: ⌘ + f\n")
-        
-        keyboard_shortcuts_label = tk.Message(popup, text=keyboard_shortcuts, font=("Arial", 14), bg=cl.CC_WHITE, fg=cl.CC_BLACK, width=380)
-        keyboard_shortcuts_label.pack(anchor="nw", padx=20, pady=0, expand=True)
-
-        # Close button
-        btn_close = tk.Button(popup, text="Close", highlightbackground=cl.CC_WHITE, command=popup.destroy)
-        btn_close.pack(padx=20, pady=(0,20), anchor="sw")
-
-        def close_popup(self):
-            popup.destroy()
-
-        # Keyboard bindings
-        popup.bind("<Escape>", close_popup)
-        popup.bind("<Return>", close_popup)
 
 '''
 TKINTER ENTRY POINT

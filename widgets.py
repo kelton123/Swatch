@@ -576,12 +576,13 @@ class CursorFollowerLabel:
         label = tk.Label(
             self.tooltip_window,
             text=self.text,
-            bg=cl.CC_BLACK,        # Dark modern background
-            fg=cl.CC_WHITE,        # White text
+            bg=cl.CC_BLACK,
+            fg=cl.CC_WHITE,
             font=("Arial", 12),
             padx=8,
             pady=4,
-            bd=0
+            bd=0,
+            justify="left"
         )
         label.pack()
 
