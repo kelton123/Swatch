@@ -28,6 +28,7 @@ def create_popup(parent_widget, title="", width=260, height=150):
     popup = tk.Toplevel(main_window, bg=cl.CC_WHITE)
     popup.title(title)
     popup.resizable(False, False)
+    popup.config(padx=15, pady=15)
 
     # Launch the popup in the centre of the root window.
     centre_launch_popup(main_window, popup, width, height)

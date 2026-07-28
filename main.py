@@ -380,34 +380,33 @@ class ColourCoperUI:
     # Create a new swatch inside the given tab
     def open_swatch_popup(self, tab_id, hex=None):
         # Create the top-level pop-up window        
-        popup = widgets.create_popup(self.root, "Add Swatch", 260, 260)
+        popup = widgets.create_popup(self.root, "Add Swatch", 260, 225)
 
         # POPUP LAYOUT
         # Configure layout spacing for the popup
         popup.columnconfigure(1, weight=1)
-        popup.config(padx=15, pady=15)
 
         # Colour preview
         colour_preview = tk.Frame(
             popup,
-            background="#ff0000",
+            background=cl.CC_BLACK,
             height=75
         )
-        colour_preview.grid(row=0, column=0, rowspan=2, columnspan=3, sticky="nesw", pady=5)
+        colour_preview.grid(row=0, column=0, rowspan=2, columnspan=3, sticky="nesw", pady=(0,5))
 
         # Name Entry Widget
-        lbl_name = tk.Label(popup, text="Name:", bg=cl.CC_WHITE, highlightbackground=cl.CC_WHITE, font=("futura-book", 12))
+        lbl_name = tk.Label(popup, text="Name:", bg=cl.CC_WHITE, fg=cl.CC_BLACK, highlightbackground=cl.CC_WHITE, font=("futura-book", 12))
         lbl_name.grid(row=2, column=0, sticky="w", pady=5)
         
-        ent_name = tk.Entry(popup, bg=cl.CC_WHITE, highlightbackground=cl.CC_WHITE)
+        ent_name = tk.Entry(popup, bg=cl.CC_PURE_WHITE, highlightbackground=cl.CC_WHITE, font=("futura-book", 14))
         ent_name.grid(row=2, column=1, columnspan=2, sticky="ew", padx=(10, 0), pady=5)
         ent_name.focus_set()  # Automatically place cursor in this box
 
         # Hex Entry Widget
-        lbl_hex = tk.Label(popup, text="Hex Code: #", bg=cl.CC_WHITE, font=("futura-book", 12), highlightbackground=cl.CC_WHITE)
+        lbl_hex = tk.Label(popup, text="Hex Code: #", bg=cl.CC_WHITE, fg=cl.CC_BLACK, font=("futura-book", 12), highlightbackground=cl.CC_WHITE)
         lbl_hex.grid(row=3, column=0, sticky="w", pady=5)
         
-        ent_hex = tk.Entry(popup, bg=cl.CC_WHITE, highlightbackground=cl.CC_WHITE, font=("futura-book", 12))
+        ent_hex = tk.Entry(popup, bg=cl.CC_PURE_WHITE, highlightbackground=cl.CC_WHITE, font=("futura-book", 14))
         ent_hex.grid(row=3, column=1, sticky="ew", padx=(10, 0), pady=5)
 
         # Bind every key press to check if a hex code has been supplied to update the colour preview
@@ -440,7 +439,7 @@ class ColourCoperUI:
             highlightbackground=cl.CC_WHITE,
             bg=cl.CC_PURE_WHITE,
             )
-        eyedrop_button.pack(ipadx=4, ipady=4)
+        eyedrop_button.pack(ipadx=2, ipady=2, side="right")
 
         # Bind the new swatch button
         eyedrop_button.bind("<Button-1>", lambda event: self.start_eyedropper())
@@ -491,15 +490,15 @@ class ColourCoperUI:
 
         # Buttons Layout Frame (at the bottom)
         btn_frame = tk.Frame(popup, bg=cl.CC_WHITE)
-        btn_frame.grid(row=4, column=0, columnspan=3, sticky="ew", pady=(20, 0))
+        btn_frame.grid(row=4, column=0, columnspan=3, sticky="ew", pady=(5,0))
         btn_frame.columnconfigure(0, weight=1) # Invisible space pushing buttons right
 
         # Close Button
-        btn_close = tk.Button(btn_frame, text="Close", bg=cl.CC_WHITE, font=("futura-book", 12), highlightbackground=cl.CC_WHITE, command=popup.destroy)  # [3]
+        btn_close = tk.Button(btn_frame, text="Close", bg=cl.CC_WHITE, fg=cl.CC_BLACK, font=("futura-book", 12), highlightbackground=cl.CC_WHITE, command=popup.destroy)  # [3]
         btn_close.grid(row=0, column=1, padx=5)
 
         # Save Button
-        btn_save = tk.Button(btn_frame, text="Save", bg=cl.CC_WHITE, font=("futura-book", 12), highlightbackground=cl.CC_WHITE, command=save_action)
+        btn_save = tk.Button(btn_frame, text="Save", bg=cl.CC_WHITE, fg=cl.CC_BLACK, font=("futura-book", 12), highlightbackground=cl.CC_WHITE, command=save_action)
         btn_save.grid(row=0, column=2, padx=5)
 
         # Bind keyboard inputs
@@ -508,22 +507,13 @@ class ColourCoperUI:
 
     # Create a new, empty project tab via a name-entry pop-up
     def add_new_project_tab(self, event=None):
-        popup = tk.Toplevel(self.root)
-        popup.title("New Project Tab")
-        popup.transient(self.root)
-        popup.grab_set()
-        popup.columnconfigure(1, weight=1)
-        popup.config(padx=15, pady=15)
-        popup.resizable(False, False)
+        popup = widgets.create_popup(self.root, "New Project", 320, 110)
 
-        # Open the popup in the centre of the root window.
-        widgets.centre_launch_popup(self.root, popup, 300, 130)
+        lbl_name = tk.Label(popup, text="Project Name:", font=("futura-book", 12), bg=cl.CC_WHITE)
+        lbl_name.grid(row=0, column=0, sticky="w", pady=(0,15), padx=(0,15))
 
-        lbl_name = tk.Label(popup, text="Project Name:", font=("futura-book", 12))
-        lbl_name.grid(row=0, column=0, sticky="w", pady=5)
-
-        ent_name = tk.Entry(popup, font=("futura-book", 12), highlightbackground=cl.CC_WHITE)
-        ent_name.grid(row=0, column=1, sticky="ew", padx=(10, 0), pady=5)
+        ent_name = tk.Entry(popup, font=("futura-book", 14), highlightbackground=cl.CC_WHITE, bg=cl.CC_PURE_WHITE)
+        ent_name.grid(row=0, column=1, sticky="w", pady=(0,15))
         ent_name.focus_set()
 
         def create_action(event=None):
@@ -537,16 +527,15 @@ class ColourCoperUI:
         def close_popup(self):
             popup.destroy()
 
-
-        btn_frame = tk.Frame(popup)
-        btn_frame.grid(row=1, column=0, columnspan=2, sticky="ew", pady=(20, 0))
+        btn_frame = tk.Frame(popup, bg=cl.CC_WHITE)
+        btn_frame.grid(row=1, column=0, columnspan=2, sticky="ew", pady=(15,0))
         btn_frame.columnconfigure(0, weight=1)
 
-        btn_close = tk.Button(btn_frame, text="Cancel", font=("futura-book", 12), highlightbackground=cl.CC_WHITE, command=popup.destroy)
-        btn_close.grid(row=0, column=1, padx=5, pady=0)
+        btn_close = tk.Button(btn_frame, text="Cancel", font=("futura-book", 12), bg=cl.CC_WHITE, highlightbackground=cl.CC_WHITE, command=popup.destroy)
+        btn_close.grid(row=0, column=1, padx=(0,5))
 
-        btn_create = tk.Button(btn_frame, text="Create", font=("futura-book", 12), highlightbackground=cl.CC_WHITE, command=create_action)
-        btn_create.grid(row=0, column=2, padx=5, pady=0)
+        btn_create = tk.Button(btn_frame, text="Create", font=("futura-book", 12), bg=cl.CC_WHITE, highlightbackground=cl.CC_WHITE, command=create_action)
+        btn_create.grid(row=0, column=2, padx=(5,0))
 
         # Bind keyboard inputs
         popup.bind("<Escape>", close_popup)
@@ -719,13 +708,19 @@ class ColourCoperUI:
             messagebox.showwarning("Warning", "No project tabs to delete!", parent=self.root)
             return
 
-        popup = widgets.create_popup(self.root, "Delete Project Tab", 300, 130)
+        popup = widgets.create_popup(self.root, "Delete Project Tab", 320, 150)
 
-        confirmation_message = tk.Message(popup, text=f"Are you sure you want to delete the current project tab?\nAll unsave swatches will be lost.", font=("futura-book", 14), bg=cl.CC_WHITE, fg=cl.CC_BLACK, width=280)
-        confirmation_message.grid(row=0, column=0, sticky="w", pady=5, padx=10)
+        confirmation_message = tk.Message(
+            popup,
+            text=f"Are you sure you want to delete the current project tab?\n\nAll unsave swatches will be lost.",
+            font=("futura-book", 14),
+            bg=cl.CC_WHITE,
+            fg=cl.CC_BLACK,
+            width=300)
+        confirmation_message.grid(row=0, column=0, sticky="ew")
 
         btn_frame = tk.Frame(popup, bg=cl.CC_WHITE)
-        btn_frame.grid(row=1, column=0, columnspan=2, sticky="ew", pady=(20, 10), padx=10)
+        btn_frame.grid(row=1, column=0, columnspan=2, sticky="ew", pady=(20, 0))
         btn_frame.columnconfigure(1, weight=1)
 
         def confirm(event=None):
