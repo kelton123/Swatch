@@ -337,7 +337,7 @@ class Swatch(tk.Frame):
         self.swatch_name = tk.Label(
             self,
             text=self.label_text,
-            font=("futura-bold", font_size),
+            font=("futura-bold", font_size, "bold"),
             **label_style_options)
         self.swatch_name.grid(row=0, column=0, sticky="w", padx=(10, 0), pady=pad_y)
 

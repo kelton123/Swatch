@@ -84,9 +84,20 @@ class ColourCoperUI:
 
         # SWATCH TOOLS
         # Tint adjustment
-        self.tint_entry = tk.Entry(self.header_frame, width=5, highlightbackground=cl.CC_WHITE)
-        self.tint_entry.insert(0, "100%")  # Pre-fill with hashtag as a helper
-        self.tint_entry.grid(row=0, column=0)
+        self.tint_entry = tk.Entry(
+            self.header_frame,
+            highlightbackground=cl.CC_WHITE,
+            bg=cl.CC_PURE_WHITE,
+            fg=cl.CC_BLACK,
+            font=("futura-book", 12),
+            width=5
+            )
+
+        # Pre-fill with percentage as a helper
+        self.tint_entry.insert(0, "100%")
+        self.tint_entry.grid(row=0, column=0, padx=(0, 4))
+
+        # Update all of the swatches when the widget is unfocused.
         self.tint_entry.bind("<FocusOut>", self.update_swatch_tint)
 
         # Add the hover label class
@@ -98,15 +109,21 @@ class ColourCoperUI:
         # Dropdown options  
         self.colour_codes = ["hex", "rgb", "cmyk", "hsl"]
 
-        self.format_combobox = ttk.Combobox(self.header_frame, values=self.colour_codes, width=5, state="readonly", font=("futura-book", 12))
+        self.format_combobox = ttk.Combobox(
+            self.header_frame,
+            values=self.colour_codes,
+            width=5,
+            state="readonly",
+            font=("futura-book", 12)
+            )
         self.format_combobox.set("hex")
-        self.format_combobox.grid(row=0, column=1)
+        self.format_combobox.grid(row=0, column=1, padx=(4,0))
         self.format_combobox.bind("<<ComboboxSelected>>", self.update_all_swatches_label)
 
         # Add the hover label class
         widgets.CursorFollowerLabel(self.format_combobox, text=f"Colour Format | ⌘ + F\n\nUse the dropdown to update the\ncolour code on all swatches.")
 
-        # Add a new swatch to the active tab
+        # NEW SWATCH BUTTON
         new_swatch_icon = Image.open("icons/plus.png")
         new_swatch_icon = new_swatch_icon.resize((18,18))
         self.new_swatch_image = ImageTk.PhotoImage(new_swatch_icon)
@@ -139,7 +156,7 @@ class ColourCoperUI:
         # Add the hover label class
         widgets.CursorFollowerLabel(self.new_swatch_button, text="New Swatch | ⌘ + N")
 
-        # Add a new tab for swatches.
+        # NEW PROJECT BUTTON
         new_folder_icon = Image.open("icons/folder-plus.png")
         new_folder_icon = new_folder_icon.resize((18,18))
         self.new_project_image = ImageTk.PhotoImage(new_folder_icon)
@@ -168,7 +185,7 @@ class ColourCoperUI:
         # Add the hover label class
         widgets.CursorFollowerLabel(self.add_notebook, text="New Project | ⌘ + P")
 
-        # Save swatch palette button aligned to the right of the window.
+        # SAVE PROJECT BUTTON
         save_icon = Image.open("icons/save-01.png")
         save_icon = save_icon.resize((18,18))
         self.save_image = ImageTk.PhotoImage(save_icon)
@@ -198,7 +215,7 @@ class ColourCoperUI:
         # Add the hover label class
         widgets.CursorFollowerLabel(self.save_button, text="Save Project | ⌘ + S")
 
-        # Load swatches palette button aligned to the right of the window.
+        # OPEN PROJECT BUTTON
         load_icon = Image.open("icons/folder-open.png")
         load_icon = load_icon.resize((20,20))
         self.load_image = ImageTk.PhotoImage(load_icon)
@@ -228,7 +245,7 @@ class ColourCoperUI:
         # Add the hover label class
         widgets.CursorFollowerLabel(self.load_button, text="Open Project | ⌘ + O")
 
-        # Delete swatches palette button aligned to the right of the window.
+        # DELETE PROJECT BUTTON
         delete_icon = Image.open("icons/trash.png")
         delete_icon = delete_icon.resize((16,16))
         self.delete_image = ImageTk.PhotoImage(delete_icon)
@@ -410,8 +427,20 @@ class ColourCoperUI:
         ent_hex.grid(row=3, column=1, sticky="ew", padx=(10, 0), pady=5)
 
         # Bind every key press to check if a hex code has been supplied to update the colour preview
-        def update_colour_preview(self):
+        def update_colour_preview(event):
+            # Exit early on special characters
+            key_name = event.keysym
+            special_chars = ["Return", "Delete", "Space", "Left", "Right", "Up", "Down"]
+            if key_name in special_chars:
+                return
+
+            # Format the entry text to always be uppercase
             hex_code = ent_hex.get().strip()
+            if hex_code.islower():
+                ent_hex.delete(0, tk.END)
+                ent_hex.insert(0, hex_code.upper())
+
+            # Do not update the preview with less than 6 characters (a hex code length.)
             if len(hex_code) != 6:
                 return
 
@@ -509,7 +538,7 @@ class ColourCoperUI:
     def add_new_project_tab(self, event=None):
         popup = widgets.create_popup(self.root, "New Project", 320, 110)
 
-        lbl_name = tk.Label(popup, text="Project Name:", font=("futura-book", 12), bg=cl.CC_WHITE)
+        lbl_name = tk.Label(popup, text="Name:", font=("futura-book", 12), bg=cl.CC_WHITE)
         lbl_name.grid(row=0, column=0, sticky="w", pady=(0,15), padx=(0,15))
 
         ent_name = tk.Entry(popup, font=("futura-book", 14), highlightbackground=cl.CC_WHITE, bg=cl.CC_PURE_WHITE)
