@@ -84,6 +84,9 @@ class ColourCoperUI:
         self.tint_entry.grid(row=0, column=0)
         self.tint_entry.bind("<FocusOut>", self.update_swatch_tint)
 
+        # Add the hover label class
+        widgets.CursorFollowerLabel(self.tint_entry, text="Update Tint/Shade: -95 to 100")
+
         # Colour code format dropdown
         # Dropdown options  
         self.colour_codes = ["hex", "rgb", "cmyk", "hsl"]
@@ -92,6 +95,9 @@ class ColourCoperUI:
         self.format_combobox.set("hex")
         self.format_combobox.grid(row=0, column=1)
         self.format_combobox.bind("<<ComboboxSelected>>", self.update_all_swatches_label)
+
+        # Add the hover label class
+        widgets.CursorFollowerLabel(self.format_combobox, text="Change colour format")
 
         # Eyedropper tool to create a swatch
         dropper_icon = Image.open("icons/dropper.png")
@@ -118,6 +124,9 @@ class ColourCoperUI:
         self.eyedrop_button.bind("<Button-1>", lambda event: self.start_eyedropper())
         self.eyedrop_button.bind("<Enter>", self.on_hover_label)
         self.eyedrop_button.bind("<Leave>", self.on_leave_label)
+
+        # Add the hover label class
+        widgets.CursorFollowerLabel(self.eyedrop_button, text="Create swatch from an eyedrop")
 
         # Add a new swatch to the active tab
         new_swatch_icon = Image.open("icons/plus.png")
@@ -148,6 +157,9 @@ class ColourCoperUI:
         self.new_swatch_button.bind("<Enter>", self.on_hover_label)
         self.new_swatch_button.bind("<Leave>", self.on_leave_label)
 
+        # Add the hover label class
+        widgets.CursorFollowerLabel(self.new_swatch_button, text="Add new swatch")
+
         # Add a new tab for swatches.
         new_folder_icon = Image.open("icons/folder-plus.png")
         new_folder_icon = new_folder_icon.resize((18,18))
@@ -176,8 +188,7 @@ class ColourCoperUI:
         self.add_notebook.bind("<Leave>", self.on_leave_label)
 
         # Add the hover label class
-        widgets.CursorFollowerLabel(self.new_project_border, text="Add new project tab")
-        widgets.CursorFollowerLabel(self.add_notebook, text="Add new project tab")
+        widgets.CursorFollowerLabel(self.add_notebook, text="Add new project")
 
         # Save swatch palette button aligned to the right of the window.
         save_icon = Image.open("icons/save-01.png")
@@ -206,9 +217,12 @@ class ColourCoperUI:
         self.save_button.bind("<Enter>", self.on_hover_label)
         self.save_button.bind("<Leave>", self.on_leave_label)
 
+        # Add the hover label class
+        widgets.CursorFollowerLabel(self.save_button, text="Save project")
+
         # Load swatches palette button aligned to the right of the window.
-        load_icon = Image.open("icons/folder-search.png")
-        load_icon = load_icon.resize((18,18))
+        load_icon = Image.open("icons/folder-open.png")
+        load_icon = load_icon.resize((20,20))
         self.load_image = ImageTk.PhotoImage(load_icon)
 
         self.load_border = tk.Frame(
@@ -223,8 +237,8 @@ class ColourCoperUI:
             self.load_border,
             image=self.load_image,
             bg=cl.CC_PURE_WHITE,
-            padx=5,
-            pady=5
+            padx=3,
+            pady=3
             )
         self.load_button.pack(ipadx=4, ipady=4)
 
@@ -232,6 +246,9 @@ class ColourCoperUI:
         self.load_button.bind("<Button-1>", lambda event: self.load_project_tab())
         self.load_button.bind("<Enter>", self.on_hover_label)
         self.load_button.bind("<Leave>", self.on_leave_label)
+
+        # Add the hover label class
+        widgets.CursorFollowerLabel(self.load_button, text="Open a project")
 
         # Delete swatches palette button aligned to the right of the window.
         delete_icon = Image.open("icons/trash.png")
@@ -259,6 +276,9 @@ class ColourCoperUI:
         self.delete_palette_button.bind("<Button-1>", lambda event: self._open_delete_tab_popup())
         self.delete_palette_button.bind("<Enter>", self.on_hover_label)
         self.delete_palette_button.bind("<Leave>", self.on_leave_label)
+
+        # Add the hover label class
+        widgets.CursorFollowerLabel(self.delete_palette_button, text="Delete project")
 
         '''
         TAB SECTION

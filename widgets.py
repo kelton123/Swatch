@@ -549,7 +549,7 @@ class Swatch(tk.Frame):
             self.on_delete()
 
 class CursorFollowerLabel:
-    def __init__(self, target_widget, text, offset_x=12, offset_y=12):
+    def __init__(self, target_widget, text, offset_x=16, offset_y=16):
         self.target_widget = target_widget
         self.text = text
         self.offset_x = offset_x
@@ -576,9 +576,9 @@ class CursorFollowerLabel:
         label = tk.Label(
             self.tooltip_window,
             text=self.text,
-            bg="#1f2937",        # Dark modern background
-            fg="#ffffff",        # White text
-            font=("Arial", 9, "bold"),
+            bg=cl.CC_BLACK,        # Dark modern background
+            fg=cl.CC_WHITE,        # White text
+            font=("Arial", 12),
             padx=8,
             pady=4,
             bd=0
