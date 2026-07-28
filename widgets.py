@@ -48,7 +48,7 @@ class ButtonTab(tk.Button):
             'fg': cl.CC_BLACK,
             'bg': cl.CC_WHITE,
             "highlightbackground": cl.CC_WHITE,
-            'font': ('arial', 14, 'normal'),
+            'font': ("futura-book", 14, 'normal'),
             'borderwidth': 0,
             'cursor': 'hand2',  # Hand cursor on hover
             'padx': 20,
@@ -89,7 +89,7 @@ class ButtonNewTab(tk.Button):
             'fg': cl.CC_BLACK,
             'bg': cl.CC_WHITE,
             "highlightbackground": cl.CC_WHITE,
-            'font': ('arial', 14, 'normal'),
+            'font': ("futura", 14, 'normal'),
             'borderwidth': 0,
             'cursor': 'hand2',  # Hand cursor on hover
             'activebackground': cl.CC_BLACK,
@@ -102,7 +102,7 @@ class ButtonNewSwatch(tk.Button):
     def __init__(self, parent, **kwargs):
         defaults = {
             "text": "+",
-            "font": ("arial", 32, "bold"),
+            "font": ("futura", 32, "bold"),
             "fg": cl.CC_GREY,
             "bg": cl.CC_WHITE,
             "borderwidth": 0
@@ -118,7 +118,7 @@ class LabelHeading(tk.Label):
     """
     def __init__(self, parent, **kwargs):
         defaults = {
-            'font': ('arial', 32, 'bold'),
+            'font': ("futura", 32, 'bold'),
             'fg': cl.CC_BLACK,
             'bg': cl.CC_WHITE,
             'anchor': 'w'
@@ -136,7 +136,7 @@ class LabelBody(tk.Label):
         self.placeholder_colour = cl.CC_GREY
 
         defaults = {
-            'font': ('arial', 16, 'normal'),
+            'font': ("futura", 16, 'normal'),
             'fg': cl.CC_BLACK,
             'bg': cl.CC_WHITE,
             'anchor': 'w'
@@ -155,7 +155,7 @@ class LabelFooter(tk.Label):
     """
     def __init__(self, parent, **kwargs):
         defaults = {
-            'font': ('arial', 12, 'normal'),
+            'font': ("futura-book", 12, 'normal'),
             'fg': cl.CC_GREY,
             'bg': cl.CC_WHITE,
             'anchor': 'center'
@@ -320,7 +320,7 @@ class Swatch(tk.Frame):
         text_colour = self.select_by_brightness(cl.CC_WHITE, cl.CC_BLACK, brightness)
         
         # UI Styling configurations
-        lbl_opts = {"bg": self.hex_code, "fg": text_colour, "anchor": "w"}
+        label_style_options = {"bg": self.hex_code, "fg": text_colour, "anchor": "w"}
         
         # Add a padding for column 1
         self.columnconfigure(1, weight=2)
@@ -333,32 +333,36 @@ class Swatch(tk.Frame):
             font_size = 14
             pad_y = (13,20)
 
-        self.swatch_name = tk.Label(self, text=self.label_text, font=("Arial", font_size, "bold"), **lbl_opts)
+        self.swatch_name = tk.Label(
+            self,
+            text=self.label_text,
+            font=("futura-bold", font_size),
+            **label_style_options)
         self.swatch_name.grid(row=0, column=0, sticky="w", padx=(10, 0), pady=pad_y)
 
         # Delete button
-        self.delete_button = tk.Label(self, text = "✕", font = ("Arial", 14), **lbl_opts)
+        self.delete_button = tk.Label(self, text = "✕", font = ("futura", 14), **label_style_options)
         self.delete_button.bind("<Button-1>", lambda event: self.close_swatch())
         self.delete_button.grid(row = 0, column = 2, sticky = "e", padx = (0, 10), pady = (10, 15))
         
         # Colour Code Label
         active_colour_code = self._get_active_colour_code()
 
-        self.colour_code_value = tk.Label(self, text = f"{active_colour_code}", font=("Arial", 14), **lbl_opts)
+        self.colour_code_value = tk.Label(self, text = f"{active_colour_code}", font=("futura-book", 14), **label_style_options)
         self.colour_code_value.grid(row = 1, column = 0, sticky = "w", padx = (10, 0), pady = (4,0))
 
         # Copy Icon
         icon_copy = self.select_by_brightness(self.icon_copy_light, self.icon_copy_dark, brightness)
 
-        self.icon_copy_label = tk.Label(self, image=icon_copy, **lbl_opts)
+        self.icon_copy_label = tk.Label(self, image=icon_copy, **label_style_options)
         self.icon_copy_label.image = icon_copy 
         self.icon_copy_label.grid(row=1, column=2, sticky="e", padx = (0, 10), pady = (4,0))
 
         # Swatch position management widgets
-        self.left_button = tk.Label(self, text = "←", font=("Arial", 14), **lbl_opts)
+        self.left_button = tk.Label(self, text = "←", font=("futura", 14), **label_style_options)
         self.left_button.grid(row=2, column=0, sticky="w", padx = (10, 0), pady = (0,10))
         
-        self.right_button = tk.Label(self, text="→", font=("Arial", 14), **lbl_opts)
+        self.right_button = tk.Label(self, text="→", font=("futura", 14), **label_style_options)
         self.right_button.grid(row=2, column=2, sticky="e", padx = (0, 10), pady = (0,10))
 
         # Bind inputs
@@ -496,7 +500,7 @@ class Swatch(tk.Frame):
             if len(name) > 10:
                 font_size = 14
 
-            self.swatch_name.config(text=name, font=("Arial", font_size, "bold"))
+            self.swatch_name.config(text=name, font=("futura", font_size, "bold"))
             popup.destroy()
         
         def close_popup(self):
@@ -507,10 +511,10 @@ class Swatch(tk.Frame):
         btn_frame.grid(row=1, column=0, columnspan=2, sticky="ew", pady=(10, 0))
         btn_frame.columnconfigure(0, weight=1)
 
-        btn_close = tk.Button(btn_frame, text="Cancel", command=popup.destroy)
+        btn_close = tk.Button(btn_frame, text="Cancel", font=("futura-book", 12), command=popup.destroy)
         btn_close.grid(row=0, column=1, padx=5, pady=0)
 
-        btn_create = tk.Button(btn_frame, text="Update", command=update_name)
+        btn_create = tk.Button(btn_frame, text="Update", font=("futura-book", 12), command=update_name)
         btn_create.grid(row=0, column=2, padx=5, pady=0)
 
         # Bind keyboard inputs
@@ -578,7 +582,7 @@ class CursorFollowerLabel:
             text=self.text,
             bg=cl.CC_BLACK,
             fg=cl.CC_WHITE,
-            font=("Arial", 12),
+            font=("futura-book", 12),
             padx=8,
             pady=4,
             bd=0,

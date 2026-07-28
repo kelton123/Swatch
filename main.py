@@ -84,25 +84,27 @@ class ColourCoperUI:
 
         # SWATCH TOOLS
         # Tint adjustment
-        self.tint_entry = tk.Entry(self.header_frame, width=5,highlightbackground=cl.CC_WHITE)
+        self.tint_entry = tk.Entry(self.header_frame, width=5, highlightbackground=cl.CC_WHITE)
         self.tint_entry.insert(0, "100%")  # Pre-fill with hashtag as a helper
         self.tint_entry.grid(row=0, column=0)
         self.tint_entry.bind("<FocusOut>", self.update_swatch_tint)
 
         # Add the hover label class
-        widgets.CursorFollowerLabel(self.tint_entry, text=f"Tint + Shade Adjustment\n\nUpdate the percentage to add more white (0-100)\nor more black (-95-0) to all swatches.")
+        widgets.CursorFollowerLabel(
+            self.tint_entry,
+            text=f"Tint + Shade Adjustment\n\nUpdate the percentage to add more white (0-100)\nor more black (-95-0) to all swatches.\nPress Enter to confirm.")
 
         # Colour code format dropdown
         # Dropdown options  
         self.colour_codes = ["hex", "rgb", "cmyk", "hsl"]
 
-        self.format_combobox = ttk.Combobox(self.header_frame, values=self.colour_codes, width=5, state="readonly")
+        self.format_combobox = ttk.Combobox(self.header_frame, values=self.colour_codes, width=5, state="readonly", font=("futura-book", 12))
         self.format_combobox.set("hex")
         self.format_combobox.grid(row=0, column=1)
         self.format_combobox.bind("<<ComboboxSelected>>", self.update_all_swatches_label)
 
         # Add the hover label class
-        widgets.CursorFollowerLabel(self.format_combobox, text=f"Colour Format | ⌘ + f\n\nUse the dropdown to update the colour code on all swatches.")
+        widgets.CursorFollowerLabel(self.format_combobox, text=f"Colour Format | ⌘ + F\n\nUse the dropdown to update the\ncolour code on all swatches.")
 
         # Add a new swatch to the active tab
         new_swatch_icon = Image.open("icons/plus.png")
@@ -119,12 +121,13 @@ class ColourCoperUI:
 
         self.new_swatch_button = tk.Label(
             self.new_swatch_border,
-            text="  swatch",
+            text=" Swatch",
             image=self.new_swatch_image,
             highlightbackground=cl.CC_WHITE,
             bg=cl.CC_PURE_WHITE,
             fg=cl.CC_BLACK,
-            compound="left"
+            compound="left",
+            font=("futura", 12)
             )
         self.new_swatch_button.pack(ipadx=4, ipady=4)
 
@@ -134,7 +137,7 @@ class ColourCoperUI:
         self.new_swatch_button.bind("<Leave>", self.on_leave_label)
 
         # Add the hover label class
-        widgets.CursorFollowerLabel(self.new_swatch_button, text="New Swatch | ⌘ + n")
+        widgets.CursorFollowerLabel(self.new_swatch_button, text="New Swatch | ⌘ + N")
 
         # Add a new tab for swatches.
         new_folder_icon = Image.open("icons/folder-plus.png")
@@ -154,7 +157,6 @@ class ColourCoperUI:
             image=self.new_project_image,
             bg=cl.CC_PURE_WHITE,
             fg=cl.CC_BLACK,
-            compound="left",
             )
         self.add_notebook.pack(ipadx=4, ipady=4)
 
@@ -164,7 +166,7 @@ class ColourCoperUI:
         self.add_notebook.bind("<Leave>", self.on_leave_label)
 
         # Add the hover label class
-        widgets.CursorFollowerLabel(self.add_notebook, text="New Project | ⌘ + p")
+        widgets.CursorFollowerLabel(self.add_notebook, text="New Project | ⌘ + P")
 
         # Save swatch palette button aligned to the right of the window.
         save_icon = Image.open("icons/save-01.png")
@@ -184,7 +186,7 @@ class ColourCoperUI:
             image=self.save_image,
             bg=cl.CC_PURE_WHITE,
             padx=5,
-            pady=5
+            pady=5,
             )
         self.save_button.pack(ipadx=4, ipady=4)
 
@@ -194,7 +196,7 @@ class ColourCoperUI:
         self.save_button.bind("<Leave>", self.on_leave_label)
 
         # Add the hover label class
-        widgets.CursorFollowerLabel(self.save_button, text="Save Project | ⌘ + s")
+        widgets.CursorFollowerLabel(self.save_button, text="Save Project | ⌘ + S")
 
         # Load swatches palette button aligned to the right of the window.
         load_icon = Image.open("icons/folder-open.png")
@@ -224,7 +226,7 @@ class ColourCoperUI:
         self.load_button.bind("<Leave>", self.on_leave_label)
 
         # Add the hover label class
-        widgets.CursorFollowerLabel(self.load_button, text="Open Project | ⌘ + o")
+        widgets.CursorFollowerLabel(self.load_button, text="Open Project | ⌘ + O")
 
         # Delete swatches palette button aligned to the right of the window.
         delete_icon = Image.open("icons/trash.png")
@@ -254,7 +256,7 @@ class ColourCoperUI:
         self.delete_palette_button.bind("<Leave>", self.on_leave_label)
 
         # Add the hover label class
-        widgets.CursorFollowerLabel(self.delete_palette_button, text="Delete Project | ⌘ + d")
+        widgets.CursorFollowerLabel(self.delete_palette_button, text="Delete Project | ⌘ + D")
 
         '''
         TAB SECTION
@@ -394,18 +396,18 @@ class ColourCoperUI:
         colour_preview.grid(row=0, column=0, rowspan=2, columnspan=3, sticky="nesw", pady=5)
 
         # Name Entry Widget
-        lbl_name = tk.Label(popup, text="Name:", bg=cl.CC_WHITE)
+        lbl_name = tk.Label(popup, text="Name:", bg=cl.CC_WHITE, highlightbackground=cl.CC_WHITE, font=("futura-book", 12))
         lbl_name.grid(row=2, column=0, sticky="w", pady=5)
         
-        ent_name = tk.Entry(popup, bg=cl.CC_WHITE)
+        ent_name = tk.Entry(popup, bg=cl.CC_WHITE, highlightbackground=cl.CC_WHITE)
         ent_name.grid(row=2, column=1, columnspan=2, sticky="ew", padx=(10, 0), pady=5)
         ent_name.focus_set()  # Automatically place cursor in this box
 
         # Hex Entry Widget
-        lbl_hex = tk.Label(popup, text="Hex Code: #", bg=cl.CC_WHITE)
+        lbl_hex = tk.Label(popup, text="Hex Code: #", bg=cl.CC_WHITE, font=("futura-book", 12), highlightbackground=cl.CC_WHITE)
         lbl_hex.grid(row=3, column=0, sticky="w", pady=5)
         
-        ent_hex = tk.Entry(popup, bg=cl.CC_WHITE)
+        ent_hex = tk.Entry(popup, bg=cl.CC_WHITE, highlightbackground=cl.CC_WHITE, font=("futura-book", 12))
         ent_hex.grid(row=3, column=1, sticky="ew", padx=(10, 0), pady=5)
 
         # Bind every key press to check if a hex code has been supplied to update the colour preview
@@ -493,11 +495,11 @@ class ColourCoperUI:
         btn_frame.columnconfigure(0, weight=1) # Invisible space pushing buttons right
 
         # Close Button
-        btn_close = tk.Button(btn_frame, text="Close", bg=cl.CC_WHITE, command=popup.destroy)  # [3]
+        btn_close = tk.Button(btn_frame, text="Close", bg=cl.CC_WHITE, font=("futura-book", 12), highlightbackground=cl.CC_WHITE, command=popup.destroy)  # [3]
         btn_close.grid(row=0, column=1, padx=5)
 
         # Save Button
-        btn_save = tk.Button(btn_frame, text="Save", bg=cl.CC_WHITE, command=save_action)
+        btn_save = tk.Button(btn_frame, text="Save", bg=cl.CC_WHITE, font=("futura-book", 12), highlightbackground=cl.CC_WHITE, command=save_action)
         btn_save.grid(row=0, column=2, padx=5)
 
         # Bind keyboard inputs
@@ -517,10 +519,10 @@ class ColourCoperUI:
         # Open the popup in the centre of the root window.
         widgets.centre_launch_popup(self.root, popup, 300, 130)
 
-        lbl_name = tk.Label(popup, text="Project Name:")
+        lbl_name = tk.Label(popup, text="Project Name:", font=("futura-book", 12))
         lbl_name.grid(row=0, column=0, sticky="w", pady=5)
 
-        ent_name = tk.Entry(popup)
+        ent_name = tk.Entry(popup, font=("futura-book", 12), highlightbackground=cl.CC_WHITE)
         ent_name.grid(row=0, column=1, sticky="ew", padx=(10, 0), pady=5)
         ent_name.focus_set()
 
@@ -540,10 +542,10 @@ class ColourCoperUI:
         btn_frame.grid(row=1, column=0, columnspan=2, sticky="ew", pady=(20, 0))
         btn_frame.columnconfigure(0, weight=1)
 
-        btn_close = tk.Button(btn_frame, text="Cancel", command=popup.destroy)
+        btn_close = tk.Button(btn_frame, text="Cancel", font=("futura-book", 12), highlightbackground=cl.CC_WHITE, command=popup.destroy)
         btn_close.grid(row=0, column=1, padx=5, pady=0)
 
-        btn_create = tk.Button(btn_frame, text="Create", command=create_action)
+        btn_create = tk.Button(btn_frame, text="Create", font=("futura-book", 12), highlightbackground=cl.CC_WHITE, command=create_action)
         btn_create.grid(row=0, column=2, padx=5, pady=0)
 
         # Bind keyboard inputs
@@ -565,6 +567,9 @@ class ColourCoperUI:
         except ValueError:
             messagebox.showwarning("Warning", "Please enter a valid value between -95 to 100", parent=self.root)
             return
+
+        # Remove focus from the combobox
+        self._focus_main_window()
 
         self.tint_entry.delete(0, "end")
         if tint_value == 0:
@@ -716,7 +721,7 @@ class ColourCoperUI:
 
         popup = widgets.create_popup(self.root, "Delete Project Tab", 300, 130)
 
-        confirmation_message = tk.Message(popup, text=f"Are you sure you want to delete the current project tab?\nAll unsave swatches will be lost.", font=("Arial", 14), bg=cl.CC_WHITE, fg=cl.CC_BLACK, width=280)
+        confirmation_message = tk.Message(popup, text=f"Are you sure you want to delete the current project tab?\nAll unsave swatches will be lost.", font=("futura-book", 14), bg=cl.CC_WHITE, fg=cl.CC_BLACK, width=280)
         confirmation_message.grid(row=0, column=0, sticky="w", pady=5, padx=10)
 
         btn_frame = tk.Frame(popup, bg=cl.CC_WHITE)
@@ -735,10 +740,10 @@ class ColourCoperUI:
         def destroy_popup(self=None, event=None):
             popup.destroy()
 
-        btn_close = tk.Button(btn_frame, text="Cancel", highlightbackground=cl.CC_WHITE, command=destroy_popup)
+        btn_close = tk.Button(btn_frame, text="Cancel", highlightbackground=cl.CC_WHITE, font=("futura-book", 12), command=destroy_popup)
         btn_close.grid(row=0, column=0, padx=10, pady=0)
 
-        btn_create = tk.Button(btn_frame, text="Confirm", highlightbackground=cl.CC_WHITE, command=confirm)
+        btn_create = tk.Button(btn_frame, text="Confirm", highlightbackground=cl.CC_WHITE, font=("futura-book", 12), command=confirm)
         btn_create.grid(row=0, column=2, padx=10, pady=0)
 
         popup.bind("<Return>", confirm)
@@ -764,11 +769,13 @@ class ColourCoperUI:
     '''
     SWATCH MANAGEMENT
     '''
-
     # Update swatch label to reflect the format in the menu combobox
     def update_all_swatches_label(self, event=None):
         # get the value of the format combobox
         format_value = self.format_combobox.get()
+
+        # Remove focus from the combobox
+        self._focus_main_window()
         
         # Loop through each tab id and then all of the swatches in each open tab
         for tab in self.tabs:
