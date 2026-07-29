@@ -536,11 +536,27 @@ class ColourCoperUI:
         btn_frame.columnconfigure(0, weight=1) # Invisible space pushing buttons right
 
         # Close Button
-        btn_close = tk.Button(btn_frame, text="Close", bg=cl.CC_WHITE, fg=cl.CC_BLACK, font=("futura-book", 12), highlightbackground=cl.CC_WHITE, command=popup.destroy)  # [3]
+        btn_close = tk.Button(
+            btn_frame,
+            text                = "Close",
+            bg                  = cl.CC_WHITE,
+            fg                  = cl.CC_BLACK,
+            font                = ("futura-book", 12),
+            highlightbackground = cl.CC_WHITE,
+            command             = popup.destroy
+            )
         btn_close.grid(row=0, column=1, padx=5)
 
         # Save Button
-        btn_save = tk.Button(btn_frame, text="Save", bg=cl.CC_WHITE, fg=cl.CC_BLACK, font=("futura-book", 12), highlightbackground=cl.CC_WHITE, command=save_action)
+        btn_save = tk.Button(
+            btn_frame,
+            text                = "Save",
+            bg                  = cl.CC_WHITE,
+            fg                  = cl.CC_BLACK,
+            font                = ("futura-book", 12),
+            highlightbackground = cl.CC_WHITE,
+            command             = save_action
+            )
         btn_save.grid(row=0, column=2, padx=5)
 
         # Bind keyboard inputs

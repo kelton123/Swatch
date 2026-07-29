@@ -473,15 +473,15 @@ class Swatch(tk.Frame):
         When the user clicks on the name label, open a popup where the
         user can type a new name for the swatch.
         '''
-        popup = create_popup(self.root_window, "Update Name", 300, 130)
+        popup = create_popup(self.root_window, "Update Name", 300, 110)
 
         # Create a label for what the user has to input.
-        lbl_name = tk.Label(popup, text="Name:")
-        lbl_name.grid(row=0, column=0, sticky="w", pady=10, padx=10)
+        lbl_name = tk.Label(popup, text="Name:", bg=cl.CC_WHITE, font=("futura-book", 12))
+        lbl_name.grid(row=0, column=0, sticky="w", pady=(0,20))
 
         # Create an entry widget 
-        ent_name = tk.Entry(popup)
-        ent_name.grid(row=0, column=1, sticky="ew", padx=(10, 0), pady=5)
+        ent_name = tk.Entry(popup, bg=cl.CC_PURE_WHITE, font=("futura-book", 14))
+        ent_name.grid(row=0, column=1, sticky="ew", padx=(10, 0), pady=(0,20))
         ent_name.focus_set()
 
         # If the user confirms try and update the swatch label
@@ -508,15 +508,29 @@ class Swatch(tk.Frame):
             popup.destroy()
 
         # Create confirm and quit buttons
-        btn_frame = tk.Frame(popup)
-        btn_frame.grid(row=1, column=0, columnspan=2, sticky="ew", pady=(10, 0))
+        btn_frame = tk.Frame(popup, bg=cl.CC_WHITE)
+        btn_frame.grid(row=1, column=0, columnspan=2, sticky="ew")
         btn_frame.columnconfigure(0, weight=1)
 
-        btn_close = tk.Button(btn_frame, text="Cancel", font=("futura-book", 12), command=popup.destroy)
-        btn_close.grid(row=0, column=1, padx=5, pady=0)
+        btn_close = tk.Button(
+            btn_frame,
+            text                = "Cancel",
+            font                = ("futura-book", 12),
+            bg                  = cl.CC_WHITE,
+            highlightbackground = cl.CC_WHITE,
+            command             = popup.destroy
+            )
+        btn_close.grid(row=0, column=1, padx=(0,5))
 
-        btn_create = tk.Button(btn_frame, text="Update", font=("futura-book", 12), command=update_name)
-        btn_create.grid(row=0, column=2, padx=5, pady=0)
+        btn_create = tk.Button(
+            btn_frame,
+            text                = "Update",
+            font                = ("futura-book", 12),
+            bg                  = cl.CC_WHITE,
+            highlightbackground = cl.CC_WHITE,
+            command             = update_name
+            )
+        btn_create.grid(row=0, column=2, padx=(5,0))
 
         # Bind keyboard inputs
         popup.bind("<Escape>", close_popup)
