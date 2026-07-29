@@ -535,7 +535,7 @@ class Swatch(tk.Frame):
     def apply_swatch_name_layout(self, name):
         """Updates the swatch name and adjusts font size, padding, and column minsize."""
         # Update class variable when renamed
-        self.label_text = name
+        self.label_text = name.title()
 
         # Determine layout settings based on the name length
         if len(self.label_text) >= 10:

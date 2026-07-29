@@ -29,7 +29,8 @@ OPTIONS = {
     'packages': [
         'mss',
         'PIL',
-        ]}
+        ],
+    'iconfile':'app_icon.icns'}
 
 setup(
     app=APP,
