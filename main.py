@@ -6,6 +6,7 @@ import json
 import mss
 import os
 import time
+import sys
 
 import tkinter as tk
 from tkinter import ttk
@@ -29,6 +30,12 @@ def clamp(x):
 def rgb_to_hex(r,g,b,a=None):
     return "{0:02x}{1:02x}{2:02x}".format(clamp(r), clamp(g), clamp(b))
 
+def get_resource_path(relative_path):
+    """Get absolute path to resource, works for dev and for py2app bundle."""
+    # os.path.abspath(__file__) points inside Contents/Resources/ when running in py2app
+    base_path = os.path.dirname(os.path.abspath(__file__))
+    return os.path.join(base_path, relative_path)
+
 class ColourCoperUI:
     def __init__(self, root):
         self.root = root
@@ -51,7 +58,7 @@ class ColourCoperUI:
         self.tabs = {}
 
         # Load images that can be used later
-        dropper_icon = Image.open("icons/dropper.png")
+        dropper_icon = Image.open(get_resource_path("icons/dropper.png"))
         dropper_icon = dropper_icon.resize((18,18))
         self.eyedrop_icon = ImageTk.PhotoImage(dropper_icon)
 

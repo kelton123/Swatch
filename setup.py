@@ -14,7 +14,7 @@ DATA_FILES = [
     'light_copy_icon.png',
     'Dark_copy_icon.png',
     'Dark_cross_icon.png',
-    'icons/trash.png',
+    ('icons', ['icons/trash.png',
     'icons/save-01.png',
     'icons/plus.png',
     'icons/folder-search.png',
@@ -22,17 +22,13 @@ DATA_FILES = [
     'icons/folder-open.png',
     'icons/copy-06.png',
     'icons/dropper.png',
-    'icons/x-close.png'
+    'icons/x-close.png'])
     ]
 
 OPTIONS = {
     'packages': [
-        'tkinter',
-        'json',
-        'PIL',
         'mss',
-        'os',
-        'time'
+        'PIL',
         ]}
 
 setup(
