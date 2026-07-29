@@ -5,6 +5,7 @@ The main UI for colour clipboard using tkinter as the graphical layer.
 import json
 import mss
 import os
+import time
 
 import tkinter as tk
 from tkinter import ttk
@@ -423,8 +424,8 @@ class ColourCoperUI:
         lbl_hex = tk.Label(popup, text="Hex Code: #", bg=cl.CC_WHITE, fg=cl.CC_BLACK, font=("futura-book", 12), highlightbackground=cl.CC_WHITE)
         lbl_hex.grid(row=3, column=0, sticky="w", pady=5)
         
-        ent_hex = tk.Entry(popup, bg=cl.CC_PURE_WHITE, highlightbackground=cl.CC_WHITE, font=("futura-book", 14))
-        ent_hex.grid(row=3, column=1, sticky="ew", padx=(10, 0), pady=5)
+        self.ent_hex = tk.Entry(popup, bg=cl.CC_PURE_WHITE, highlightbackground=cl.CC_WHITE, font=("futura-book", 14))
+        self.ent_hex.grid(row=3, column=1, sticky="ew", padx=(10, 0), pady=5)
 
         # Bind every key press to check if a hex code has been supplied to update the colour preview
         def update_colour_preview(event):
@@ -435,10 +436,10 @@ class ColourCoperUI:
                 return
 
             # Format the entry text to always be uppercase
-            hex_code = ent_hex.get().strip()
+            hex_code = self.ent_hex.get().strip()
             if hex_code.islower():
-                ent_hex.delete(0, tk.END)
-                ent_hex.insert(0, hex_code.upper())
+                self.ent_hex.delete(0, tk.END)
+                self.ent_hex.insert(0, hex_code.upper())
 
             # Do not update the preview with less than 6 characters (a hex code length.)
             if len(hex_code) != 6:
@@ -451,7 +452,7 @@ class ColourCoperUI:
                 messagebox.showwarning("Warning", "Please enter a valid hex code, e.g. #FF8D28", parent=popup)
                 return
                     
-        ent_hex.bind("<KeyRelease>", update_colour_preview)
+        self.ent_hex.bind("<KeyRelease>", update_colour_preview)
 
         # Eyedropper button to get a hex code from the screen (by taking a screenshot)
         eyedrop_button_border = tk.Frame(
@@ -470,21 +471,34 @@ class ColourCoperUI:
             )
         eyedrop_button.pack(ipadx=2, ipady=2, side="right")
 
+        def handle_eyedropper_click(event=None):
+            hex_code = self.get_eyedropper_hex(parent_popup=popup)
+            if hex_code:
+                # Update Entry Widget
+                self.ent_hex.delete(0, tk.END)
+                self.ent_hex.insert(0, hex_code.upper())
+                
+                # Update Preview Frame
+                try:
+                    colour_preview.config(bg=f"#{hex_code}")
+                except _tkinter.TclError:
+                    pass
+
         # Bind the new swatch button
-        eyedrop_button.bind("<Button-1>", lambda event: self.start_eyedropper())
-        eyedrop_button.bind("<Enter>", self.on_hover_label)
-        eyedrop_button.bind("<Leave>", self.on_leave_label)
+        eyedrop_button.bind("<Button-1>", handle_eyedropper_click)
+        eyedrop_button.bind("<Enter>",    self.on_hover_label)
+        eyedrop_button.bind("<Leave>",    self.on_leave_label)
 
         # Add the hover label class
-        widgets.CursorFollowerLabel(eyedrop_button, text="Eyedropper | click a pixel to sample its hex code")
+        widgets.CursorFollowerLabel(eyedrop_button, text=f"Eyedropper\n\nClick a pixel to sample its hex code")
 
         if hex:
-            ent_hex.insert(0, hex)
+            self.ent_hex.insert(0, hex)
 
         #  BUTTON FUNCTIONS
         def save_action():
             name_data = ent_name.get().strip().capitalize()
-            hex_data  = ent_hex.get().strip()
+            hex_data  = self.ent_hex.get().strip()
 
             if hex_data is None and hex is not None:
                 hex_data = hex
@@ -603,101 +617,98 @@ class ColourCoperUI:
                 for swatch in swatches:
                     swatch.update_colour_tint(int(tint_value))
 
-    # EYEDROPPER FUNCTIONS
-    def start_eyedropper(self):
-        if len(self.notebook.children) == 0:
-            messagebox.showwarning("Warning", "No project tabs to add swatch to!", parent=self.root)
-            return
-        # Hide the main window so it doesn't appear in the screenshot
+# EYEDROPPER FUNCTIONS
+    def get_eyedropper_hex(self, parent_popup=None):
+        """
+        Captures the screen and returns the hex code of the clicked pixel.
+        Returns None if the user cancels with Escape.
+        """
+        # 1. Hide the main app and the swatch popup during capture
         self.root.withdraw()
-        
-        # Force a UI update and add a tiny delay to ensure the window is hidden
-        self.root.update()
-        self.root.after(50, self.take_screenshot_and_show_overlay)
+        if parent_popup:
+            parent_popup.withdraw()
 
-    def take_screenshot_and_show_overlay(self):
-        # Capture the entire screen
-        # self.screen_img = ImageGrab.grab(scale_down=True)
+        # Give the window manager a moment to actually finish hiding the
+        # windows before we grab the screen - a single update() isn't a
+        # hard guarantee, especially with animated hide/show (e.g. macOS).
+        for _ in range(4):
+            self.root.update()
+            time.sleep(0.05)
 
-        with mss.mss() as sct:
-            monitor = sct.monitors[1]
-            sct_img = sct.grab(monitor)
-            
-            # 1. Get the raw image as usual
-            raw_img = Image.frombytes("RGB", sct_img.size, sct_img.bgra, "raw", "BGRX")
-            
-            # 2. Define the path to the standard macOS Display P3 profile
-            p3_profile_path = "/System/Library/ColorSync/Profiles/Display P3.icc"
-            
-            # 3. Check if the profile exists (standard on modern Macs) and convert
-            if os.path.exists(p3_profile_path):
-                try:
-                    # Load the Mac's P3 profile and Pillow's built-in sRGB profile
-                    p3_profile = ImageCms.ImageCmsProfile(p3_profile_path)
-                    srgb_profile = ImageCms.createProfile("sRGB")
-                    
-                    # Build the conversion matrix
-                    transform = ImageCms.buildTransform(
-                        inputProfile=p3_profile, 
-                        outputProfile=srgb_profile, 
-                        inMode="RGB", 
-                        outMode="RGB"
-                    )
-                    
-                    # Apply the transformation to the screenshot
-                    self.screen_img = ImageCms.applyTransform(raw_img, transform)
-                    
-                except Exception as e:
-                    print(f"Color conversion failed: {e}")
-                    self.screen_img = raw_img
-            else:
-                print("P3 ICC profile not found, skipping conversion.")
-                self.screen_img = raw_img
+        selected_hex = [None]
+        overlay = None
 
-        # Create a fullscreen, borderless overlay window
-        self.overlay = tk.Toplevel(self.root)
-        self.overlay.attributes("-fullscreen", True)
-        self.overlay.attributes("-topmost", True) # Keep it above all other apps
-        self.overlay.config(cursor="crosshair")   # Change cursor to a crosshair
+        try:
+            # 2. Capture the screen with mss & handle P3 color space conversion
+            with mss.mss() as sct:
+                monitor = sct.monitors[1]
+                sct_img = sct.grab(monitor)
+                raw_img = Image.frombytes("RGB", sct_img.size, sct_img.bgra, "raw", "BGRX")
 
-        # Display the screenshot on a Canvas
-        self.tk_img = ImageTk.PhotoImage(self.screen_img)
+                p3_profile_path = "/System/Library/ColorSync/Profiles/Display P3.icc"
+                if os.path.exists(p3_profile_path):
+                    try:
+                        p3_profile = ImageCms.ImageCmsProfile(p3_profile_path)
+                        srgb_profile = ImageCms.createProfile("sRGB")
+                        transform = ImageCms.buildTransform(p3_profile, srgb_profile, "RGB", "RGB")
+                        screen_img = ImageCms.applyTransform(raw_img, transform)
+                    except Exception as e:
+                        print(f"Color conversion failed: {e}")
+                        screen_img = raw_img
+                else:
+                    screen_img = raw_img
 
-        screen_width  = self.root.winfo_screenwidth()
-        screen_height = self.root.winfo_screenheight()
-        self.canvas = tk.Canvas(self.overlay, highlightthickness=0, width=screen_width, height=screen_height)
-        self.canvas.pack(fill="both", expand=True)
-        self.canvas.create_image(0, 0, image=self.tk_img, anchor="nw")
+            # 3. Create Fullscreen Overlay
+            overlay = tk.Toplevel(self.root)
+            overlay.attributes("-fullscreen", True)
+            overlay.attributes("-topmost", True)
+            overlay.config(cursor="crosshair")
 
-        # Bind the left mouse click to our selection method
-        self.canvas.bind("<Button-1>", self.on_pixel_click)
-        
-        # Bind Escape key to cancel
-        self.overlay.bind("<Escape>", lambda e: self.close_overlay())
+            # Display image on Canvas
+            tk_img = ImageTk.PhotoImage(screen_img)
+            screen_width = overlay.winfo_screenwidth()
+            screen_height = overlay.winfo_screenheight()
 
-    def on_pixel_click(self, event):
-        # Get the exact x, y coordinates of the click
-        # x, y = event.x, event.y
+            canvas = tk.Canvas(overlay, highlightthickness=0, width=screen_width, height=screen_height)
+            canvas.pack(fill="both", expand=True)
+            canvas.create_image(0, 0, image=tk_img, anchor="nw")
+            canvas.image = tk_img  # keep a reference so Tk doesn't garbage-collect it
 
-        scale_factor = self.screen_img.width / self.root.winfo_screenwidth()
-    
-        # Scale the Tkinter event coordinates to match the mss physical pixels
-        actual_x = int(event.x * scale_factor)
-        actual_y = int(event.y * scale_factor)
-        
-        # Grab the RGB color at those coordinates from our captured image
-        pixel_color = self.screen_img.getpixel((actual_x, actual_y))
-        r, g, b = pixel_color[:3]
+            # 4. Define Event Callbacks
+            def on_pixel_click(event):
+                scale_factor = screen_img.width / overlay.winfo_screenwidth()
+                actual_x = int(event.x * scale_factor)
+                actual_y = int(event.y * scale_factor)
 
-        # Close the overlay and restore the main window
-        self.close_overlay()
+                actual_x = max(0, min(actual_x, screen_img.width - 1))
+                actual_y = max(0, min(actual_y, screen_img.height - 1))
 
-        # Call your custom function with the selected color
-        self.open_swatch_popup(self._get_active_tab_id(), rgb_to_hex(r,g,b))
+                r, g, b = screen_img.getpixel((actual_x, actual_y))[:3]
+                selected_hex[0] = rgb_to_hex(r, g, b)
+                overlay.destroy()
 
-    def close_overlay(self):
-        self.overlay.destroy()
-        self.root.deiconify() # Bring the main window back
+            def on_cancel(event=None):
+                overlay.destroy()
+
+            canvas.bind("<Button-1>", on_pixel_click)
+            overlay.bind("<Escape>", on_cancel)
+
+            overlay.focus_force()
+            overlay.grab_set()
+
+            # 5. Pause execution until the overlay window is closed
+            self.root.wait_window(overlay)
+
+        finally:
+            # 6. ALWAYS restore hidden windows, even if something above raised
+            if overlay is not None and overlay.winfo_exists():
+                overlay.destroy()
+            if parent_popup:
+                parent_popup.deiconify()
+            self.root.deiconify()
+
+        # Return the resulting hex string (or None)
+        return selected_hex[0]
 
     '''
     TAB MANAGEMENT
