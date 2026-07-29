@@ -626,8 +626,10 @@ class ColourCoperUI:
         else:
             self.tint_entry.insert(0, f"{tint_value}%")
 
-        for tab_frame, tab_data in self.tabs.items():
-            swatches = tab_frame.winfo_children()
+        for tab_frame, tab_data in list(self.tabs.items()):
+            if not tab_frame.winfo_exists():
+                continue
+            swatches = [w for w in tab_frame.winfo_children() if isinstance(w, widgets.Swatch)]
             if swatches:
                 for swatch in swatches:
                     swatch.update_colour_tint(int(tint_value))
@@ -733,29 +735,72 @@ class ColourCoperUI:
     # The frame itself is used as the tab's identifier throughout, since
     # that's what ttk.Notebook expects.
     def _create_tab(self, name):
-        tab_frame = tk.Frame(self.notebook, bg=cl.CC_WHITE)
-        self.notebook.add(tab_frame, text=name)
+        # Outer container added to the notebook
+        tab_container = tk.Frame(self.notebook)
 
+        # Canvas & Scrollbar setup inside tab_container
+        tab_canvas = tk.Canvas(tab_container, bg=cl.CC_WHITE, highlightthickness=0)
+        tab_scrollbar = tk.Scrollbar(tab_container, orient="vertical", command=tab_canvas.yview)
+        tab_canvas.configure(yscrollcommand=tab_scrollbar.set)
+
+        tab_scrollbar.pack(side="right", fill="y")
+        tab_canvas.pack(side="left", fill="both", expand=True)
+
+        # Content frame (where swatch cards will actually be placed)
+        tab_frame = tk.Frame(tab_canvas, bg=cl.CC_WHITE)
+        canvas_window = tab_canvas.create_window((0, 0), window=tab_frame, anchor="nw")
+
+        # Synchronize scrolling region and width
+        def on_frame_configure(event):
+            # Update scrollable area whenever child widgets change
+            bbox = tab_canvas.bbox("all")
+            if bbox:
+                tab_canvas.configure(scrollregion=bbox)
+
+        def on_canvas_configure(event):
+            # Dynamically resize inner tab_frame to fit canvas width
+            tab_canvas.itemconfig(canvas_window, width=event.width)
+
+        tab_frame.bind("<Configure>", on_frame_configure)
+        tab_canvas.bind("<Configure>", on_canvas_configure)
+
+        # Enable Mousewheel / Trackpad Scrolling
+        def _on_mousewheel(event):
+            # Handles macOS trackpad/mousewheel scrolling
+            delta = event.delta if event.delta != 0 else -event.num
+            tab_canvas.yview_scroll(int(-1 * delta), "units")
+
+        tab_canvas.bind_all("<MouseWheel>", _on_mousewheel)
+
+        # Add container frame to notebook
+        self.notebook.add(tab_container, text=name)
+
+        # Store references using tab_frame as the key for caller compatibility
         self.tabs[tab_frame] = {
+            "container": tab_container,
+            "canvas": tab_canvas,
             "name": name,
             "filepath": None,
             "dirty": False,
         }
 
-        self.notebook.select(tab_frame)
+        # Set active tab and return the inner tab_frame
+        self.notebook.select(tab_container)
         return tab_frame
 
     # Remove a tab entirely (used when loading replaces an empty first tab,
     # and by the "delete" button)
-    def _remove_tab(self, event=None):
-        active_tab_id = self._get_active_tab_id()
+    def _remove_tab(self, tab_id=None):
+        if tab_id is None or isinstance(tab_id, tk.Event):
+            tab_id = self._get_active_tab_id()
 
-        if active_tab_id is None:
-            raise ValueError
+        if tab_id is None or tab_id not in self.tabs:
+            raise ValueError("No tab to remove.")
 
-        self.tabs.pop(active_tab_id, None)
-        self.notebook.forget(active_tab_id)
-        active_tab_id.destroy()
+        tab_data = self.tabs.pop(tab_id)
+        container = tab_data["container"]
+        self.notebook.forget(container)
+        container.destroy()
 
     # Open a popup to confirm if the user wants to delete a project tab.
     def _open_delete_tab_popup(self, event=None):
@@ -802,9 +847,16 @@ class ColourCoperUI:
     # The frame currently shown by the Notebook, or None if there are no tabs
     def _get_active_tab_id(self):
         selection = self.notebook.select()
+
         if not selection:
             return None
-        return self.root.nametowidget(selection)
+        
+        container = self.root.nametowidget(selection)
+        for tab_frame, tab_data in self.tabs.items():
+            if tab_data.get("container") == container:
+                return tab_frame
+            
+        return None
 
     # Mark a tab as having unsaved changes and update its label with a "*"
     def _mark_dirty(self, tab_id):
@@ -812,9 +864,12 @@ class ColourCoperUI:
         self._update_tab_label(tab_id)
 
     def _update_tab_label(self, tab_id):
+        if tab_id not in self.tabs:
+            return
+        
         tab = self.tabs[tab_id]
         label = tab["name"] + ("*" if tab["dirty"] else "")
-        self.notebook.tab(tab_id, text=label)
+        self.notebook.tab(tab["container"], text=label)
 
     '''
     SWATCH MANAGEMENT
@@ -828,11 +883,11 @@ class ColourCoperUI:
         self._focus_main_window()
         
         # Loop through each tab id and then all of the swatches in each open tab
-        for tab in self.tabs:
-            # Get all of the swatches inside the tab to update the labels on.
+        for tab in list(self.tabs.keys()):
+            if not tab.winfo_exists():
+                continue
             swatches = [w for w in tab.winfo_children() if isinstance(w, widgets.Swatch)]
-            # Update each swatch's label text with the new colour code format.
-            for i, swatch in enumerate(swatches):
+            for swatch in swatches:
                 swatch.update_colour_code_label(format_value)
                 swatch.active_format = format_value
 
@@ -957,6 +1012,7 @@ class ColourCoperUI:
     # Delete the active tab
     def delete_active_tab(self, event=None):
         tab_id = self._get_active_tab_id()
+
         if tab_id is None:
             return
 
