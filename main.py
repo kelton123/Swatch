@@ -496,7 +496,7 @@ class ColourCoperUI:
 
         #  BUTTON FUNCTIONS
         def save_action():
-            name_data = ent_name.get().strip().capitalize()
+            name_data = ent_name.get().strip().title()
             hex_data  = self.ent_hex.get().strip()
 
             if hex_data is None and hex is not None:

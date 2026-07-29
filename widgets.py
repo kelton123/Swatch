@@ -322,24 +322,18 @@ class Swatch(tk.Frame):
         
         # UI Styling configurations
         label_style_options = {"bg": self.hex_code, "fg": text_colour, "anchor": "w"}
-        
-        # Add a padding for column 1
-        self.columnconfigure(1, weight=2)
 
         # Swatch Name Label
         # Reduce the font size if there are more than 10 characters in the swatch name.
-        font_size = 20
-        pad_y = (10,15)
-        if len(self.label_text) > 10:
-            font_size = 14
-            pad_y = (13,20)
+        font_size, pad_y = self.apply_swatch_name_layout(self.label_text)
 
         self.swatch_name = tk.Label(
             self,
-            text=self.label_text,
-            font=("futura-bold", font_size, "bold"),
+            text  = self.label_text,
+            font  = ("futura-bold", font_size, "bold"),
             **label_style_options)
         self.swatch_name.grid(row=0, column=0, sticky="w", padx=(10, 0), pady=pad_y)
+        CursorFollowerLabel(self.swatch_name, text="Rename")
 
         # Delete button
         self.delete_button = tk.Label(self, text = "✕", font = ("futura", 14), **label_style_options)
@@ -348,9 +342,9 @@ class Swatch(tk.Frame):
         
         # Colour Code Label
         active_colour_code = self._get_active_colour_code()
-
         self.colour_code_value = tk.Label(self, text = f"{active_colour_code}", font=("futura-book", 14), **label_style_options)
-        self.colour_code_value.grid(row = 1, column = 0, sticky = "w", padx = (10, 0), pady = (4,0))
+        self.colour_code_value.grid(row = 1, column = 0, columnspan=2, sticky = "w", padx = (10, 0), pady = (4,0))
+        CursorFollowerLabel(self.colour_code_value, text="Copy")
 
         # Copy Icon
         icon_copy = self.select_by_brightness(self.icon_copy_light, self.icon_copy_dark, brightness)
@@ -358,6 +352,7 @@ class Swatch(tk.Frame):
         self.icon_copy_label = tk.Label(self, image=icon_copy, **label_style_options)
         self.icon_copy_label.image = icon_copy 
         self.icon_copy_label.grid(row=1, column=2, sticky="e", padx = (0, 10), pady = (4,0))
+        CursorFollowerLabel(self.icon_copy_label, text="Copy")
 
         # Swatch position management widgets
         self.left_button = tk.Label(self, text = "←", font=("futura", 14), **label_style_options)
@@ -497,11 +492,12 @@ class Swatch(tk.Frame):
                 return
             
             # Update font size based on name length
-            font_size = 20
-            if len(name) > 10:
-                font_size = 14
+            self.apply_swatch_name_layout(name)
 
-            self.swatch_name.config(text=name, font=("futura", font_size, "bold"))
+            # Update swatch layout
+            if callable(self.on_reorder):
+                self.on_reorder()
+
             popup.destroy()
         
         def close_popup(self):
@@ -535,6 +531,36 @@ class Swatch(tk.Frame):
         # Bind keyboard inputs
         popup.bind("<Escape>", close_popup)
         popup.bind("<Return>", update_name)
+
+    def apply_swatch_name_layout(self, name):
+        """Updates the swatch name and adjusts font size, padding, and column minsize."""
+        # Update class variable when renamed
+        self.label_text = name
+
+        # Determine layout settings based on the name length
+        if len(self.label_text) > 10:
+            font_size = 14
+            pad_y = (13, 20)
+            column_min_size = 0
+        else:
+            font_size = 20
+            pad_y = (10, 15)
+            column_min_size = 40
+
+        # Update Column 1 minsize
+        self.columnconfigure(1, weight=2, minsize=column_min_size)
+
+        # Update Label text, font, and grid padding
+        if hasattr(self, 'swatch_name'):
+            self.swatch_name.config(
+                text=self.label_text,
+                font=("futura-bold", font_size, "bold")
+            )
+            self.swatch_name.grid_configure(pady=pad_y)
+
+        self.update_idletasks()
+
+        return font_size, pad_y
 
     def _get_active_colour_code(self):
         match self.active_format:
