@@ -184,8 +184,8 @@ class Swatch(tk.Frame):
         self.on_reorder = on_reorder
 
         # Create the colour variables.
-        self.label_text = label_text
-        self.hex_code   = hex_code
+        self.label_text = label_text.title()
+        self.hex_code   = hex_code.upper()
         self.rgb_code   = self._hex_to_rgb(hex_code)
         self.cmyk_code  = self._rgb_to_cmyk(*self.rgb_code)
         self.hsl_code   = self._hex_to_hsl(hex_code)

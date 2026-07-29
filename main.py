@@ -575,7 +575,7 @@ class ColourCoperUI:
         ent_name.focus_set()
 
         def create_action(event=None):
-            name = ent_name.get().strip()
+            name = ent_name.get().strip().title()
             if not name:
                 messagebox.showwarning("Warning", "Please enter a project name!", parent=popup)
                 return
