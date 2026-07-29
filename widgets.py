@@ -538,14 +538,14 @@ class Swatch(tk.Frame):
         self.label_text = name
 
         # Determine layout settings based on the name length
-        if len(self.label_text) > 10:
+        if len(self.label_text) >= 10:
             font_size = 14
             pad_y = (13, 20)
             column_min_size = 0
         else:
             font_size = 20
             pad_y = (10, 15)
-            column_min_size = 40
+            column_min_size = 20
 
         # Update Column 1 minsize
         self.columnconfigure(1, weight=2, minsize=column_min_size)
