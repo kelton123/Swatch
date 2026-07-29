@@ -431,15 +431,14 @@ class ColourCoperUI:
         def update_colour_preview(event):
             # Exit early on special characters
             key_name = event.keysym
-            special_chars = ["Return", "Delete", "Space", "Left", "Right", "Up", "Down"]
+            special_chars = ["Return", "Delete", "Space", "Left", "Right", "Up", "Down", "Shift", "Lock", "BackSpace"]
             if key_name in special_chars:
                 return
 
             # Format the entry text to always be uppercase
             hex_code = self.ent_hex.get().strip()
-            if hex_code.islower():
-                self.ent_hex.delete(0, tk.END)
-                self.ent_hex.insert(0, hex_code.upper())
+            self.ent_hex.delete(0, tk.END)
+            self.ent_hex.insert(0, hex_code.upper())
 
             # Do not update the preview with less than 6 characters (a hex code length.)
             if len(hex_code) != 6:
@@ -516,7 +515,7 @@ class ColourCoperUI:
             # Create a new swatch widget from the user's input values.
             try:
                 # Add the leading # to the hex string
-                hex_data = f"#{hex_data}"
+                hex_data = f"#{hex_data.upper()}"
 
                 self._add_swatch_to_tab(tab_id, name_data, hex_data)
             except _tkinter.TclError:
