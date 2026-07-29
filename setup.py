@@ -13,10 +13,27 @@ DATA_FILES = [
     'widgets.py',
     'light_copy_icon.png',
     'Dark_copy_icon.png',
-    'Dark_cross_icon.png']
+    'Dark_cross_icon.png',
+    'icons/trash.png',
+    'icons/save-01.png',
+    'icons/plus.png',
+    'icons/folder-search.png',
+    'icons/folder-plus.png',
+    'icons/folder-open.png',
+    'icons/copy-06.png',
+    'icons/dropper.png',
+    'icons/x-close.png'
+    ]
 
 OPTIONS = {
-    'packages': ['tkinter', 'json', 'PIL']}
+    'packages': [
+        'tkinter',
+        'json',
+        'PIL',
+        'mss',
+        'os',
+        'time'
+        ]}
 
 setup(
     app=APP,
