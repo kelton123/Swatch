@@ -7,6 +7,8 @@ about hex codes.
 Swatch is a python application that uses tkinter to create a MacOS application for managing colour palettes and their digital codes.
 This project has been developed after spending too much time trying to find hex codes, manage tint and shade variations, and maintaining palettes across multiple software.
 
+In its simplist form, Swatch is a series of json files 
+
 ## Status
 Complete
 
