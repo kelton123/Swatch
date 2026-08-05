@@ -57,11 +57,22 @@ Complete
 ### Shortcuts
 
 ## Screenshots
+#### Using the colour code format drop down
 ![alt text](readme_images/swatch_colour_format_dropdown.png "Title")
+
+#### Mouse hover hint text for copying
 ![alt text](readme_images/swatch_copy_hint.png "Title")
+
+#### Delete project popup
 ![alt text](readme_images/swatch_delete_project_popup.png "Title")
+
+#### Mouse hover hint text for colour formatting
 ![alt text](readme_images/swatch_hover_hint_format.png "Title")
+
+#### Adding a new swatch colour popup
 ![alt text](readme_images/swatch_new_swatch.png "Title")
+
+#### Tint adjustment for all colour swatch cards
 ![alt text](readme_images/swatch_tint_adjustment.png "Title")
 
 ## Author
