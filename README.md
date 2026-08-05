@@ -57,6 +57,12 @@ Complete
 ### Shortcuts
 
 ## Screenshots
+![alt text](readme_images/swatch_colour_format_dropdown.png "Title")
+![alt text](readme_images/swatch_copy_hint.png "Title")
+![alt text](readme_images/swatch_delete_project_popup.png "Title")
+![alt text](readme_images/swatch_hover_hint_format.png "Title")
+![alt text](readme_images/swatch_new_swatch.png "Title")
+![alt text](readme_images/swatch_tint_adjustment.png "Title")
 
 ## Author
 **Kelton Boyter-Grant**  
