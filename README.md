@@ -68,32 +68,32 @@ Complete
 Using the colour code format drop down.
 
 
-![alt text](readme_images/swatch_colour_format_dropdown.png")
+![Swatch software showing the colour code dropdown UI.](readme_images/swatch_colour_format_dropdown.png "Colour format dropdown")
 
 Mouse hover hint text for copying.
 
 
-![alt text](readme_images/swatch_copy_hint.png "Title")
+![Swatch software showing the hint text to copy a colour code.](readme_images/swatch_copy_hint.png "Copy hint text")
 
 Delete project popup.
 
 
-![alt text](readme_images/swatch_delete_project_popup.png "Title")
+![Swatch software showing the delete project confirmation popup.](readme_images/swatch_delete_project_popup.png "Delete project confirmation popup")
 
 Mouse hover hint text for colour formatting.
 
 
-![alt text](readme_images/swatch_hover_hint_format.png "Title")
+![Swatch software showing the hint text when formatting the colour code.](readme_images/swatch_hover_hint_format.png "Formatting the colour code")
 
 Adding a new swatch colour popup.
 
 
-![alt text](readme_images/swatch_new_swatch.png "Title")
+![Swatch software showing the add new swatch popup UI.](readme_images/swatch_new_swatch.png "Create swatch popup")
 
 Tint adjustment for all colour swatch cards.
 
 
-![alt text](readme_images/swatch_tint_adjustment.png "Title")
+![Swatch software showing the tint adjustment tool in action.](readme_images/swatch_tint_adjustment.png "Tint adjustment tool")
 
 ## Author
 **Kelton Boyter-Grant**  
