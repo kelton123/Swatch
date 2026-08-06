@@ -1073,6 +1073,14 @@ class ColourCoperUI:
 '''
 TKINTER ENTRY POINT
 '''
+def on_closing():
+    '''
+    Open a popup when use clicks the window close button to confirm if they do want to quit the app.
+    '''
+    if messagebox.askokcancel("Quit", "Do you want to close the app? All unsaved projects will be lost!"):
+        root.destroy()
+
 root = tk.Tk()
+root.protocol("WM_DELETE_WINDOW", on_closing)
 app = ColourCoperUI(root)
 root.mainloop()
