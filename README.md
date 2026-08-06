@@ -1,4 +1,4 @@
-# Swatch
+# <img src="app_icon.png" alt="Swatch app icon." width="50"/> Swatch
 Swatch is a lightweight Mac OS app that is for designers and creatives who want better management of their colour palettes across projects and software.
 Swatch has a minimalistic user interface following industry best practices to help simplify your creative workflow and enable you to keep designing and not worrying
 about hex codes.
