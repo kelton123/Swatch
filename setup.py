@@ -11,10 +11,11 @@ APP = ['main.py']
 DATA_FILES = [
     'colours.py',
     'widgets.py',
-    'icons/Light_copy_icon.png',
-    'icons/Dark_copy_icon.png',
+    ('icons', [
+    'icons/Dark_copy_icon.png',     
     'icons/Dark_cross_icon.png',
-    ('icons', ['icons/trash.png',
+    'icons/Light_copy_icon.png',
+    'icons/trash.png',
     'icons/save-01.png',
     'icons/plus.png',
     'icons/folder-search.png',
