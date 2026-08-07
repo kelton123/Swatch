@@ -193,8 +193,8 @@ class Swatch(tk.Frame):
         self.formats = ["hex", "rgb", "cmyk", "hsl", "css"]
         self.active_format = active_format
 
-        self.icon_copy_light = PhotoImage(file="Light_copy_icon.png")
-        self.icon_copy_dark  = PhotoImage(file="Dark_copy_icon.png")
+        self.icon_copy_light = PhotoImage(file="icons/Light_copy_icon.png")
+        self.icon_copy_dark  = PhotoImage(file="icons/Dark_copy_icon.png")
 
         # Create the card UI widgets.
         self._create_widgets()
