@@ -306,26 +306,38 @@ class ColourCoperUI:
         # Save the active tab swatches
         self.root.bind("<Command-s>", self.save_active_tab)
         self.root.bind("<Command-S>", self.save_active_tab)
+        self.root.bind("<Control-s>", self.save_active_tab)
+        self.root.bind("<Control-S>", self.save_active_tab)
 
         # Delete the active tab
         self.root.bind("<Command-d>", self._open_delete_tab_popup)
         self.root.bind("<Command-D>", self._open_delete_tab_popup)
+        self.root.bind("<Control-d>", self._open_delete_tab_popup)
+        self.root.bind("<Control-D>", self._open_delete_tab_popup)
 
         # Load a swatch file
         self.root.bind("<Command-o>", self.load_project_tab)
         self.root.bind("<Command-O>", self.load_project_tab)
+        self.root.bind("<Control-o>", self.load_project_tab)
+        self.root.bind("<Control-O>", self.load_project_tab)
 
         # Add a new swatch
         self.root.bind("<Command-n>", self.add_new_swatch)
         self.root.bind("<Command-N>", self.add_new_swatch)
+        self.root.bind("<Control-n>", self.add_new_swatch)
+        self.root.bind("<Control-N>", self.add_new_swatch)
 
         # Cycle the dropdown box of colour formats
         self.root.bind("<Command-f>", self.cycle_colour_format)
         self.root.bind("<Command-F>", self.cycle_colour_format)
+        self.root.bind("<Control-f>", self.cycle_colour_format)
+        self.root.bind("<Control-F>", self.cycle_colour_format)
 
         # Create a new project tab
         self.root.bind("<Command-p>", self.add_new_project_tab)
         self.root.bind("<Command-P>", self.add_new_project_tab)
+        self.root.bind("<Control-p>", self.add_new_project_tab)
+        self.root.bind("<Control-P>", self.add_new_project_tab)
 
         self.tint_entry.bind("<Return>", self._focus_main_window)
 
@@ -1082,5 +1094,6 @@ def on_closing():
 
 root = tk.Tk()
 root.protocol("WM_DELETE_WINDOW", on_closing)
+root.iconbitmap("app_icon.ico")
 app = ColourCoperUI(root)
 root.mainloop()
