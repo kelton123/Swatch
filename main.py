@@ -36,6 +36,7 @@ def get_resource_path(relative_path):
     base_path = os.path.dirname(os.path.abspath(__file__))
     return os.path.join(base_path, relative_path)
 
+
 class ColourCoperUI:
     def __init__(self, root):
         self.root = root
@@ -132,7 +133,7 @@ class ColourCoperUI:
         widgets.CursorFollowerLabel(self.format_combobox, text=f"Colour Format | ⌘ + F\n\nUse the dropdown to update the\ncolour code on all swatches.")
 
         # NEW SWATCH BUTTON
-        new_swatch_icon = Image.open("icons/plus.png")
+        new_swatch_icon = Image.open(get_resource_path("icons/plus.png"))
         new_swatch_icon = new_swatch_icon.resize((18,18))
         self.new_swatch_image = ImageTk.PhotoImage(new_swatch_icon)
 
@@ -165,7 +166,7 @@ class ColourCoperUI:
         widgets.CursorFollowerLabel(self.new_swatch_button, text="New Swatch | ⌘ + N")
 
         # NEW PROJECT BUTTON
-        new_folder_icon = Image.open("icons/folder-plus.png")
+        new_folder_icon = Image.open(get_resource_path("icons/folder-plus.png"))
         new_folder_icon = new_folder_icon.resize((18,18))
         self.new_project_image = ImageTk.PhotoImage(new_folder_icon)
 
@@ -194,7 +195,7 @@ class ColourCoperUI:
         widgets.CursorFollowerLabel(self.add_notebook, text="New Project | ⌘ + P")
 
         # SAVE PROJECT BUTTON
-        save_icon = Image.open("icons/save-01.png")
+        save_icon = Image.open(get_resource_path("icons/save-01.png"))
         save_icon = save_icon.resize((18,18))
         self.save_image = ImageTk.PhotoImage(save_icon)
 
@@ -224,7 +225,7 @@ class ColourCoperUI:
         widgets.CursorFollowerLabel(self.save_button, text="Save Project | ⌘ + S")
 
         # OPEN PROJECT BUTTON
-        load_icon = Image.open("icons/folder-open.png")
+        load_icon = Image.open(get_resource_path("icons/folder-open.png"))
         load_icon = load_icon.resize((20,20))
         self.load_image = ImageTk.PhotoImage(load_icon)
 
@@ -254,7 +255,7 @@ class ColourCoperUI:
         widgets.CursorFollowerLabel(self.load_button, text="Open Project | ⌘ + O")
 
         # DELETE PROJECT BUTTON
-        delete_icon = Image.open("icons/trash.png")
+        delete_icon = Image.open(get_resource_path("icons/trash.png"))
         delete_icon = delete_icon.resize((16,16))
         self.delete_image = ImageTk.PhotoImage(delete_icon)
 
@@ -1094,6 +1095,6 @@ def on_closing():
 
 root = tk.Tk()
 root.protocol("WM_DELETE_WINDOW", on_closing)
-root.iconbitmap("app_icon.ico")
+root.iconbitmap(get_resource_path("app_icon.ico"))
 app = ColourCoperUI(root)
 root.mainloop()

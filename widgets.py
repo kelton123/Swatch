@@ -1,7 +1,16 @@
 import tkinter as tk
 from tkinter import PhotoImage, messagebox
 
+import os
+import sys
+
 import colours as cl
+
+def get_resource_path(relative_path):
+    """Get absolute path to resource, works for dev and for py2app bundle."""
+    # os.path.abspath(__file__) points inside Contents/Resources/ when running in py2app
+    base_path = os.path.dirname(os.path.abspath(__file__))
+    return os.path.join(base_path, relative_path)
 
 def centre_launch_popup(root_window, popup_window, window_width, window_height):
         # Get the current position of the window
@@ -193,8 +202,8 @@ class Swatch(tk.Frame):
         self.formats = ["hex", "rgb", "cmyk", "hsl", "css"]
         self.active_format = active_format
 
-        self.icon_copy_light = PhotoImage(file="icons/Light_copy_icon.png")
-        self.icon_copy_dark  = PhotoImage(file="icons/Dark_copy_icon.png")
+        self.icon_copy_light = PhotoImage(file=get_resource_path("icons/Light_copy_icon.png"))
+        self.icon_copy_dark  = PhotoImage(file=get_resource_path("icons/Dark_copy_icon.png"))
 
         # Create the card UI widgets.
         self._create_widgets()
