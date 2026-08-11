@@ -27,6 +27,9 @@ Complete
 
 ## Installation
 ### Requirements
+- mss        == 10.2.0
+- Pillow     == 12.3.0
+- setuptools == 82.0.1
 
 ## Features
 ### Functionality
